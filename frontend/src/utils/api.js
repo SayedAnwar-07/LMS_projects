@@ -21,8 +21,6 @@ api.interceptors.request.use(
 
     // Special handling for FormData
     if (config.data instanceof FormData) {
-      config.headers["Content-Type"] = "multipart/form-data";
-    } else if (config.data) {
       config.headers["Content-Type"] = "application/json";
     }
 

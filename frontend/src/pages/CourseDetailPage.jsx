@@ -96,7 +96,6 @@ const CourseDetailPage = () => {
       </div>
     );
   }
-  console.log(`http://127.0.0.1:8000${selectedCourse.banner}`);
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -137,7 +136,7 @@ const CourseDetailPage = () => {
             <div className="relative bg-black rounded-lg overflow-hidden mb-6 aspect-video">
               {selectedCourse.banner && (
                 <img
-                  src={`http://127.0.0.1:8000${selectedCourse.banner}`}
+                  src={selectedCourse.banner}
                   alt={selectedCourse.title}
                   className="w-full h-full object-cover"
                 />
@@ -163,9 +162,7 @@ const CourseDetailPage = () => {
                 <Avatar className="h-12 w-12 border border-gray-400">
                   {selectedCourse.instructor?.avatar ? (
                     <AvatarImage
-                      src={`${import.meta.env.VITE_API_URL}/${
-                        selectedCourse.instructor.avatar
-                      }`}
+                      src={selectedCourse.instructor.avatar}
                       alt={selectedCourse.instructor.full_name}
                     />
                   ) : (
@@ -252,7 +249,7 @@ const CourseDetailPage = () => {
             <div className="bg-white border border-gray-200 rounded-lg shadow-sm sticky top-8">
               <div className="relative rounded-lg">
                 <img
-                  src={`http://127.0.0.1:8000/${selectedCourse.banner}`}
+                  src={selectedCourse.banner}
                   alt={selectedCourse.title}
                   className="w-full h-56 object-cover"
                 />

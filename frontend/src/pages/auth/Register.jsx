@@ -16,6 +16,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser, resetAuthState } from "@/redux/features/authSlice";
 import { useForm } from "react-hook-form";
+import axios from "axios";
 
 const Register = () => {
   const {
@@ -24,6 +25,7 @@ const Register = () => {
     watch,
     formState: { errors },
     setError,
+    setValue,
   } = useForm({
     defaultValues: {
       username: "",
@@ -33,13 +35,19 @@ const Register = () => {
       password: "",
       password2: "",
       role: "student",
+      avatar: "",
     },
   });
 
-  const [avatarFile, setAvatarFile] = useState(null);
-  const [avatarPreview, setAvatarPreview] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [image, setImage] = useState(null);
+  // eslint-disable-next-line no-unused-vars
+  const [imgURL, setImgURL] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState(null);
+
+  const imgbbApiKey = "7d08988bd7149e734475cafb1b06041c";
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -59,10 +67,10 @@ const Register = () => {
     }
   }, [registrationSuccess, navigate, watch]);
 
-  const handleFileChange = (e) => {
+  const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setAvatarFile(file);
+      setImage(file);
 
       // Create preview
       const reader = new FileReader();
@@ -73,22 +81,42 @@ const Register = () => {
     }
   };
 
+  const uploadToImgbb = async () => {
+    if (!image) return null;
+
+    const formData = new FormData();
+    formData.append("image", image);
+
+    try {
+      setUploadingImage(true);
+      const res = await axios.post(
+        `https://api.imgbb.com/1/upload?key=${imgbbApiKey}`,
+        formData
+      );
+      setImgURL(res.data.data.url);
+      setValue("avatar", res.data.data.url);
+      return res.data.data.url;
+    } catch (err) {
+      console.error("Image upload failed:", err);
+      setError("root", {
+        type: "server",
+        message: "Failed to upload profile picture",
+      });
+      return null;
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const onSubmit = async (data) => {
     try {
-      // Create FormData object to handle file upload
-      const formDataObj = new FormData();
-
-      // Append all form fields
-      Object.keys(data).forEach((key) => {
-        formDataObj.append(key, data[key]);
-      });
-
-      // Append avatar file if exists
-      if (avatarFile) {
-        formDataObj.append("avatar", avatarFile);
+      // Upload image first if exists
+      if (image) {
+        const imageUrl = await uploadToImgbb();
+        if (!imageUrl) return; // Stop if image upload failed
       }
 
-      await dispatch(registerUser(formDataObj)).unwrap();
+      await dispatch(registerUser(data)).unwrap();
     } catch (error) {
       // Handle specific field errors from backend
       if (error.errors) {
@@ -115,11 +143,7 @@ const Register = () => {
           <p className="text-gray-600">Join us to start learning</p>
         </div>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="space-y-4"
-          encType="multipart/form-data"
-        >
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Avatar Upload */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
@@ -148,10 +172,13 @@ const Register = () => {
                   name="avatar"
                   className="hidden"
                   accept="image/*"
-                  onChange={handleFileChange}
+                  onChange={handleImageChange}
                 />
               </label>
             </div>
+            {uploadingImage && (
+              <p className="text-sm text-gray-500">Uploading image...</p>
+            )}
           </div>
 
           {/* Full Name */}
@@ -369,9 +396,13 @@ const Register = () => {
           <Button
             type="submit"
             className="w-full bg-black hover:bg-gray-800 text-white py-3 px-4 rounded-md shadow-sm transition-colors mt-4"
-            disabled={loading}
+            disabled={loading || uploadingImage}
           >
-            {loading ? "Creating account..." : "Create Account"}
+            {loading || uploadingImage
+              ? uploadingImage
+                ? "Uploading image..."
+                : "Creating account..."
+              : "Create Account"}
           </Button>
 
           {(error || errors.root) && (

@@ -43,6 +43,13 @@ const Login = () => {
       ...prev,
       [name]: value,
     }));
+    // Clear error when user types
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+    if (errors.message) {
+      setErrors((prev) => ({ ...prev, message: "" }));
+    }
   };
 
   const validateForm = () => {
@@ -56,6 +63,8 @@ const Login = () => {
 
     if (!formData.password) {
       newErrors.password = "Password is required";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
     }
 
     setErrors(newErrors);
@@ -67,13 +76,23 @@ const Login = () => {
     if (!validateForm()) return;
 
     try {
-      await dispatch(loginUser(formData)).unwrap();
-    } catch (error) {
-      if (error.errors) {
-        setErrors(error.errors);
-      } else {
-        setErrors({ message: error.message || "Login failed" });
+      const resultAction = await dispatch(loginUser(formData));
+
+      if (loginUser.rejected.match(resultAction)) {
+        const error = resultAction.payload;
+        if (error.email) {
+          setErrors({ email: error.email });
+        } else if (error.password) {
+          setErrors({ password: error.password });
+        } else {
+          setErrors({
+            message: error.detail || "Login failed. Please try again.",
+          });
+        }
       }
+    } catch (error) {
+      console.log(error);
+      setErrors({ message: "An unexpected error occurred. Please try again." });
     }
   };
 
@@ -143,6 +162,7 @@ const Login = () => {
                 value={formData.password}
                 onChange={handleChange}
                 required
+                minLength={6}
               />
               <button
                 type="button"

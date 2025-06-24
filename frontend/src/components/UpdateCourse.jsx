@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import axios from "axios";
 import {
   fetchCourseById,
   updateCourse,
@@ -31,6 +32,11 @@ export function UpdateCourse() {
   const [loading, setLoading] = useState(false);
   const [currentBanner, setCurrentBanner] = useState(null);
   const [error, setError] = useState(null);
+  const [image, setImage] = useState(null);
+  const [imgURL, setImgURL] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  const imgbbApiKey = "7d08988bd7149e734475cafb1b06041c";
 
   const {
     register,
@@ -60,6 +66,7 @@ export function UpdateCourse() {
 
         if (course.banner) {
           setCurrentBanner(course.banner);
+          setImgURL(course.banner);
         }
 
         reset({
@@ -92,9 +99,50 @@ export function UpdateCourse() {
     fetchData();
   }, [dispatch, courseId, reset, navigate]);
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      setValue("banner", file);
+      setCurrentBanner(URL.createObjectURL(file));
+    }
+  };
+
+  const uploadToImgbb = async () => {
+    if (!image) return;
+
+    setUploadingImage(true);
+    const formData = new FormData();
+    formData.append("image", image);
+
+    try {
+      const res = await axios.post(
+        `https://api.imgbb.com/1/upload?key=${imgbbApiKey}`,
+        formData
+      );
+      const imageUrl = res.data.data.url;
+      setImgURL(imageUrl);
+      setValue("banner", imageUrl);
+      toast.success("Image uploaded successfully!");
+      return imageUrl;
+    } catch (err) {
+      console.error("Image upload failed:", err);
+      toast.error("Image upload failed");
+      throw err;
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const onSubmit = async (data) => {
     try {
       setLoading(true);
+
+      // If a new image was selected, upload it first
+      let bannerUrl = imgURL;
+      if (image && !imgURL.includes("http")) {
+        bannerUrl = await uploadToImgbb();
+      }
 
       const formData = new FormData();
 
@@ -103,8 +151,9 @@ export function UpdateCourse() {
         if (key === "what_you_will_learn" || key === "requirements") {
           formData.append(key, JSON.stringify(data[key]));
         } else if (key === "banner") {
-          // Only append banner if it's a new file
-          if (data[key] instanceof File) {
+          if (bannerUrl) {
+            formData.append(key, bannerUrl);
+          } else if (data[key] instanceof File) {
             formData.append(key, data[key]);
           }
         } else if (data[key] !== null && data[key] !== undefined) {
@@ -115,8 +164,7 @@ export function UpdateCourse() {
       // Add instructor to the form data if required by backend
       formData.append("instructor", watch("instructor") || "");
 
-      // eslint-disable-next-line no-unused-vars
-      const response = await dispatch(
+      await dispatch(
         updateCourse({
           id: courseId,
           data: formData,
@@ -251,10 +299,14 @@ export function UpdateCourse() {
                   <label className="block text-sm font-medium">
                     Course Banner
                   </label>
-                  {currentBanner && !watch("banner") && (
+                  {currentBanner && (
                     <div className="mb-2">
                       <img
-                        src={`http://127.0.0.1:8000${currentBanner}`}
+                        src={
+                          currentBanner.startsWith("blob:")
+                            ? currentBanner
+                            : { currentBanner }
+                        }
                         alt="Current banner"
                         className="h-32 object-cover rounded"
                       />
@@ -263,10 +315,15 @@ export function UpdateCourse() {
                   <Input
                     type="file"
                     accept="image/*"
-                    onChange={(e) =>
-                      setValue("banner", e.target.files?.[0] || null)
-                    }
+                    onChange={handleImageChange}
+                    disabled={uploadingImage}
                   />
+                  {uploadingImage && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Uploading image...
+                    </div>
+                  )}
                   <p className="text-sm text-muted-foreground">
                     Recommended size: 1200x600 pixels
                   </p>
@@ -484,7 +541,10 @@ export function UpdateCourse() {
                 >
                   Cancel
                 </Button>
-                <Button type="submit" disabled={loading}>
+                <Button type="submit" disabled={loading || uploadingImage}>
+                  {loading ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : null}
                   {loading ? "Updating..." : "Update Course"}
                 </Button>
               </div>

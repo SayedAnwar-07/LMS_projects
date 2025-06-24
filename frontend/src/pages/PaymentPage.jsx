@@ -31,8 +31,6 @@ const PaymentPage = () => {
   const error = useSelector(selectPaymentError);
   const isEnrolled = useSelector(selectIsEnrolled);
 
-  console.log("Current courseDetails:", courseDetails);
-
   useEffect(() => {
     if (courseId) {
       dispatch(fetchPaymentDetails(courseId));

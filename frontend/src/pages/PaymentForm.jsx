@@ -145,7 +145,6 @@ const PaymentForm = ({ courseDetails }) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
-
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-6xl">
       <ProgressSteps
@@ -177,8 +176,8 @@ const PaymentForm = ({ courseDetails }) => {
                 <div className="flex items-start space-x-4">
                   <div className="w-16 h-16 rounded-md overflow-hidden border border-gray-200">
                     <img
-                      src={`http://127.0.0.1:8000${courseDetails.banner}`}
-                      alt={enrollment.course.title}
+                      src={courseDetails.banner}
+                      alt={courseDetails.title}
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -281,7 +280,7 @@ const PaymentForm = ({ courseDetails }) => {
               <div className="flex items-start space-x-4 mb-6">
                 <div className="w-20 h-20 rounded-md overflow-hidden border border-gray-200">
                   <img
-                    src={`http://127.0.0.1:8000${courseDetails.banner}`}
+                    src={courseDetails.banner}
                     alt={courseDetails.title}
                     className="w-full h-full object-cover"
                   />

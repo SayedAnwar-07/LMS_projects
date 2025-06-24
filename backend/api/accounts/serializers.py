@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
     password2 = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
-    avatar = serializers.ImageField(required=False, allow_null=True)
+    avatar = serializers.URLField(required=False, allow_null=True)  # Changed from ImageField to URLField
 
     class Meta:
         model = User
@@ -160,27 +160,28 @@ class UserLoginSerializer(serializers.Serializer):
     def validate(self, attrs):
         email = attrs.get('email')
         password = attrs.get('password')
-        print(f"Attempting login for: {email}")
         
         if email and password:
+
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                raise serializers.ValidationError("No account found with this email address.")
+
             user = authenticate(request=self.context.get('request'), 
                             username=email, 
                             password=password)
             
             if not user:
-                exists = User.objects.filter(email=email).exists()
-                print(f"Authentication failed for {email}. User exists: {exists}")
-                if exists:
-                    print("Possible causes: wrong password or not using email as USERNAME_FIELD")
-                raise serializers.ValidationError("Unable to log in with provided credentials.")
+                raise serializers.ValidationError("Invalid password.")
             
             if not user.is_verified:
-                print(f"User {email} not verified")
                 raise serializers.ValidationError("Account not verified. Please verify your email first.")
 
-            # Add this line to include the user in validated data
             attrs['user'] = user
-            
+        else:
+            raise serializers.ValidationError("Both email and password are required.")
+
         return attrs
 
     def get_tokens(self, user):
@@ -193,7 +194,7 @@ class UserLoginSerializer(serializers.Serializer):
         
 class UserProfileSerializer(serializers.ModelSerializer):
     avatar_url = serializers.SerializerMethodField()
-    avatar = serializers.ImageField(required=False)
+    avatar = serializers.URLField(required=False)  # Changed from ImageField to URLField
 
     class Meta:
         model = User
@@ -213,9 +214,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
         }
 
     def get_avatar_url(self, obj):
-        if obj.avatar:
-            return self.context['request'].build_absolute_uri(obj.avatar.url)
-        return None
+            return obj.avatar
+    
+    def update(self, instance, validated_data):
+        avatar = validated_data.pop('avatar', None)
+        if avatar is not None:
+            instance.avatar = avatar
+        return super().update(instance, validated_data)
 
 class PasswordResetRequestSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)

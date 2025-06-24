@@ -116,7 +116,7 @@ const EnrolledCourses = () => {
               <div className="relative w-full md:w-1/3 lg:w-1/4 h-48 bg-gray-100">
                 {enrollment.course.banner && (
                   <img
-                    src={`http://127.0.0.1:8000${enrollment.course.banner}`}
+                    src={enrollment.course.banner}
                     alt={enrollment.course.title}
                     className="w-full h-full object-cover"
                   />

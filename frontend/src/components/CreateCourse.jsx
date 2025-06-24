@@ -23,6 +23,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, X } from "lucide-react";
 import { BackButton } from "./BackButton";
+import axios from "axios";
 
 // Form schema validation
 const courseFormSchema = z.object({
@@ -64,6 +65,33 @@ export function CreateCourse() {
   const categories = useSelector(selectAllCategories);
   const [loading, setLoading] = useState(false);
 
+  const [image, setImage] = useState(null);
+  const [imgURL, setImgURL] = useState("");
+
+  const imgbbApiKey = "7d08988bd7149e734475cafb1b06041c";
+
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+  };
+
+  const uploadToImgbb = async () => {
+    if (!image) return;
+
+    const formData = new FormData();
+    formData.append("image", image);
+
+    try {
+      const res = await axios.post(
+        `https://api.imgbb.com/1/upload?key=${imgbbApiKey}`,
+        formData
+      );
+      console.log("Image uploaded:", res.data.data.url);
+      setImgURL(res.data.data.url);
+    } catch (err) {
+      console.error("Image upload failed:", err);
+    }
+  };
+
   // Initialize the form
   const {
     register,
@@ -98,22 +126,28 @@ export function CreateCourse() {
       });
   }, [dispatch]);
 
+  console.log(imgURL);
+
   // Handle form submission
   const onSubmit = async (data) => {
     try {
       setLoading(true);
+
+      await uploadToImgbb();
 
       const formData = new FormData();
 
       // Append all required fields
       formData.append("title", data.title);
       formData.append("description", data.description);
-      formData.append("banner", data.banner);
       formData.append("price", String(data.price));
       formData.append("duration", data.duration);
       formData.append("level", data.level);
+      formData.append("banner", imgURL);
       formData.append("category_id", String(data.category_id));
       formData.append("is_featured", String(data.is_featured));
+
+      console.log("Data", formData);
 
       // Handle optional fields
       if (data.discount_price) {
@@ -267,9 +301,7 @@ export function CreateCourse() {
                 <Input
                   type="file"
                   accept="image/*"
-                  onChange={(e) =>
-                    setValue("banner", e.target.files?.[0] || null)
-                  }
+                  onChange={handleImageChange}
                 />
                 <p className="text-sm text-muted-foreground">
                   Recommended size: 1200x600 pixels
@@ -278,6 +310,16 @@ export function CreateCourse() {
                   <p className="text-sm text-red-500">
                     {errors.banner.message}
                   </p>
+                )}
+                {imgURL && (
+                  <div>
+                    <p>Uploaded Image URL:</p>
+                    <a href={imgURL} target="_blank" rel="noreferrer">
+                      {imgURL}
+                    </a>
+                    <br />
+                    <img src={imgURL} alt="Uploaded" width="200" />
+                  </div>
                 )}
               </div>
 

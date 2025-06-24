@@ -12,7 +12,7 @@ USER_ROLES = (
 class User(AbstractUser):
     role = models.CharField(max_length=10, choices=USER_ROLES, default="student")
     full_name = models.CharField(max_length=100, blank=True)  
-    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)  
+    avatar = models.URLField(default='https://www.iconpacks.net/icons/2/free-user-icon-3296-thumb.png')
     email = models.EmailField(unique=True)
     mobile_no = models.CharField(max_length=20, blank=True)
     is_verified = models.BooleanField(default=False)

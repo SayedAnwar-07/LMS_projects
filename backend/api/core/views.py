@@ -249,7 +249,7 @@ def lesson_list_create(request, pk=None):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-# teacher dashboard
+
 @swagger_auto_schema(method="post", request_body=QuestionAnswerSerializer)
 @api_view(["GET", "POST"])
 @permission_classes([IsAuthenticated])
@@ -297,7 +297,7 @@ def teacher_dashboard(request):
                     'id': teacher.id,
                     'name': teacher.full_name,
                     'email': teacher.email,
-                    'avatar': request.build_absolute_uri(teacher.avatar.url) if teacher.avatar else None,
+                    "avatar": teacher.avatar,
                     'mobile_no': teacher.mobile_no,
                     'join_date': teacher.date_joined.strftime("%Y-%m-%d")
                 },

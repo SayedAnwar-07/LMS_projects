@@ -21,7 +21,7 @@ class Course(models.Model):
 
     title = models.CharField(max_length=255)
     description = models.TextField()
-    banner = models.ImageField(upload_to='course_banners/')
+    banner = models.URLField()
     price = models.FloatField()
     discount_price = models.FloatField(null=True, blank=True)
     duration = models.CharField(max_length=100) 

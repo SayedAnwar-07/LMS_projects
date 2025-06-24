@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 # register
 @api_view(['POST', 'GET'])
 @permission_classes([AllowAny])
-@parser_classes([MultiPartParser, FormParser])
+@parser_classes([JSONParser, MultiPartParser, FormParser])
 def registerView(request):
     if request.method == 'GET':
         response_data = {
@@ -29,7 +29,7 @@ def registerView(request):
                 "role": {"type": "string", "required": True, "choices": ["admin", "teacher", "student"]},
                 "mobile_no": {"type": "string", "required": False},
                 "full_name": {"type": "string", "required": False},
-                "avatar": {"type": "file", "required": False},
+                "avatar": {"type": "url", "required": False},  # Changed from file to url
             },
             "message": "Submit these fields to register a new account"
         }
@@ -43,7 +43,8 @@ def registerView(request):
             }, status=status.HTTP_400_BAD_REQUEST)
         
         # No need to convert to dict, MultiPartParser handles files properly
-        serializer = UserRegistrationSerializer(data=request.data, context={'request': request})
+        data = request.data
+        serializer = UserRegistrationSerializer(data=data)
         
         try:
             if serializer.is_valid(raise_exception=True):
@@ -57,7 +58,7 @@ def registerView(request):
                         "role": user.role,
                         "full_name": user.full_name,
                         "mobile_no": user.mobile_no,
-                        "avatar": user.avatar.url if user.avatar else None
+                        "avatar": user.avatar  # Direct URL
                     }
                 }
                 return Response(response_data, status=status.HTTP_201_CREATED)
@@ -197,7 +198,7 @@ def loginView(request):
                         "role": user.role,
                         "full_name": user.full_name,
                         "mobile_no": user.mobile_no,
-                        "avatar": user.avatar.url if user.avatar else None,
+                        "avatar": user.avatar,
                         "tokens": tokens
                     }
                 }
@@ -218,7 +219,7 @@ def loginView(request):
 
 @api_view(['GET', 'PATCH'])
 @permission_classes([IsAuthenticated])
-@parser_classes([MultiPartParser, FormParser])
+@parser_classes([JSONParser, MultiPartParser, FormParser])
 def profileView(request):
     user = request.user
 
@@ -233,7 +234,7 @@ def profileView(request):
                 "email": {"type": "email", "required": False},
                 "mobile_no": {"type": "string", "required": False},
                 "full_name": {"type": "string", "required": False},
-                "avatar": {"type": "image", "required": False},
+                "avatar": {"type": "url", "required": False},  # Changed from file to url
             }
         }
         return Response(response_data, status=status.HTTP_200_OK)

@@ -10,11 +10,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, User, Camera, Edit, BookOpen } from "lucide-react";
 import EnrolledCourses from "./EnrolledCourses";
 import { BackButton } from "@/components/BackButton";
+import axios from "axios";
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
-  // eslint-disable-next-line no-unused-vars
-  const { user, loading, error } = useSelector((state) => state.auth);
+  const { user, loading } = useSelector((state) => state.auth);
   const [activeTab, setActiveTab] = useState("profile");
   const [formData, setFormData] = useState({
     username: "",
@@ -24,6 +24,9 @@ const ProfilePage = () => {
     avatar: null,
   });
   const [editMode, setEditMode] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const imgbbApiKey = "7d08988bd7149e734475cafb1b06041c";
 
   useEffect(() => {
     dispatch(fetchUserProfile());
@@ -36,7 +39,9 @@ const ProfilePage = () => {
         email: user.email || "",
         mobile_no: user.mobile_no || "",
         full_name: user.full_name || "",
+        avatar: user.avatar || null,
       });
+      setAvatarPreview(user.avatar || null);
     }
   }, [user]);
 
@@ -48,23 +53,47 @@ const ProfilePage = () => {
     }));
   };
 
-  const handleFileChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
-      avatar: e.target.files[0],
-    }));
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Create preview URL
+    const previewUrl = URL.createObjectURL(file);
+    setAvatarPreview(previewUrl);
+
+    // Upload to ImgBB
+    setUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const res = await axios.post(
+        `https://api.imgbb.com/1/upload?key=${imgbbApiKey}`,
+        formData
+      );
+
+      setFormData((prev) => ({
+        ...prev,
+        avatar: res.data.data.url,
+      }));
+    } catch (err) {
+      console.error("Image upload failed:", err);
+      // Revert preview if upload fails
+      setAvatarPreview(user?.avatar || null);
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const formDataToSend = new FormData();
-    formDataToSend.append("username", formData.username);
-    formDataToSend.append("email", formData.email);
-    formDataToSend.append("mobile_no", formData.mobile_no);
-    formDataToSend.append("full_name", formData.full_name);
-    if (formData.avatar) {
-      formDataToSend.append("avatar", formData.avatar);
-    }
+    const formDataToSend = {
+      username: formData.username,
+      email: formData.email,
+      mobile_no: formData.mobile_no,
+      full_name: formData.full_name,
+      avatar: formData.avatar,
+    };
 
     dispatch(updateUserProfile(formDataToSend)).then(() => {
       setEditMode(false);
@@ -107,9 +136,9 @@ const ProfilePage = () => {
             <Card className="w-full md:w-1/3 p-6 bg-gradient-to-br from-gray-50 to-white">
               <div className="flex flex-col items-center">
                 <div className="relative group">
-                  {user?.avatar && !formData.avatar ? (
+                  {avatarPreview ? (
                     <img
-                      src={user.avatar}
+                      src={avatarPreview}
                       alt="Profile"
                       className="h-40 w-40 rounded-full object-cover border-4 border-white shadow-xl"
                     />
@@ -121,16 +150,22 @@ const ProfilePage = () => {
                   {editMode && (
                     <label
                       htmlFor="avatar"
-                      className="absolute bottom-0 right-0 bg-white border border-gray-300 p-2 rounded-full shadow-md cursor-pointer hover:bg-gray-100 transition-colors"
+                      className={`absolute bottom-0 right-0 bg-white border border-gray-300 p-2 rounded-full shadow-md cursor-pointer hover:bg-gray-100 transition-colors ${
+                        uploadingImage ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
                     >
-                      <Camera className="h-4 w-4 text-gray-600" />
+                      {uploadingImage ? (
+                        <Loader2 className="h-4 w-4 text-gray-600 animate-spin" />
+                      ) : (
+                        <Camera className="h-4 w-4 text-gray-600" />
+                      )}
                       <input
                         id="avatar"
                         type="file"
                         name="avatar"
                         accept="image/*"
                         onChange={handleFileChange}
-                        disabled={loading}
+                        disabled={uploadingImage || loading}
                         className="hidden"
                       />
                     </label>
@@ -171,7 +206,10 @@ const ProfilePage = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => setEditMode(false)}
+                      onClick={() => {
+                        setEditMode(false);
+                        setAvatarPreview(user?.avatar || null);
+                      }}
                     >
                       Cancel
                     </Button>
@@ -195,7 +233,7 @@ const ProfilePage = () => {
                             name="username"
                             value={formData.username}
                             onChange={handleChange}
-                            disabled={loading}
+                            disabled={loading || uploadingImage}
                           />
                         ) : (
                           <p className="text-sm p-2 bg-gray-50 rounded-md">
@@ -217,7 +255,7 @@ const ProfilePage = () => {
                             name="full_name"
                             value={formData.full_name}
                             onChange={handleChange}
-                            disabled={loading}
+                            disabled={loading || uploadingImage}
                           />
                         ) : (
                           <p className="text-sm p-2 bg-gray-50 rounded-md">
@@ -240,7 +278,7 @@ const ProfilePage = () => {
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
-                            disabled={loading}
+                            disabled={loading || uploadingImage}
                           />
                         ) : (
                           <p className="text-sm p-2 bg-gray-50 rounded-md">
@@ -262,7 +300,7 @@ const ProfilePage = () => {
                             name="mobile_no"
                             value={formData.mobile_no}
                             onChange={handleChange}
-                            disabled={loading}
+                            disabled={loading || uploadingImage}
                           />
                         ) : (
                           <p className="text-sm p-2 bg-gray-50 rounded-md">
@@ -276,16 +314,22 @@ const ProfilePage = () => {
                       <div className="flex justify-end gap-3 pt-4 border-t">
                         <Button
                           variant="outline"
-                          onClick={() => setEditMode(false)}
-                          disabled={loading}
+                          onClick={() => {
+                            setEditMode(false);
+                            setAvatarPreview(user?.avatar || null);
+                          }}
+                          disabled={loading || uploadingImage}
                         >
                           Cancel
                         </Button>
-                        <Button type="submit" disabled={loading}>
-                          {loading ? (
+                        <Button
+                          type="submit"
+                          disabled={loading || uploadingImage}
+                        >
+                          {loading || uploadingImage ? (
                             <>
                               <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                              Saving...
+                              {uploadingImage ? "Uploading..." : "Saving..."}
                             </>
                           ) : (
                             "Save Changes"
