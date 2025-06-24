@@ -110,7 +110,7 @@ export function Dashboard() {
           {/* Logo & Toggle */}
           <div className="items-center justify-between mb-6 hidden md:flex">
             {!collapsed && (
-              <h1 className="text-xl font-bold text-white">Academy</h1>
+              <h1 className="text-xl font-bold text-white">The Medhakosh</h1>
             )}
             <Button
               variant="ghost"

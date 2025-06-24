@@ -38,7 +38,7 @@ const Footer = () => {
           {/* Brand Info */}
           <div className="space-y-4">
             <Link to="/" className="text-2xl font-bold text-black">
-              BrandLogo
+              The Medhakosh
             </Link>
             <p className="text-gray-600 max-w-xs">
               Empowering learners worldwide with expert-led courses and

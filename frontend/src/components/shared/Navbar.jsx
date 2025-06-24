@@ -61,7 +61,7 @@ const Navbar = () => {
             to="/"
             className="text-xl font-bold hover:text-gray-600 transition-colors"
           >
-            BrandLogo
+            The Medhakosh
           </Link>
         </div>
 

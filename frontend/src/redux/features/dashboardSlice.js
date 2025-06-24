@@ -6,7 +6,7 @@ export const fetchTeacherDashboard = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get("/teacher-dashboard/");
-      return response.data.data; // Access the nested data property
+      return response.data.data; 
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message ||

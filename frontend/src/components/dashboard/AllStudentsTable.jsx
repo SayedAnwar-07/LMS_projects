@@ -10,12 +10,14 @@ import { Button } from "@/components/ui/button";
 import {
   BookOpen,
   Users,
-  Bookmark,
   MoreVertical,
   Trash2,
   Eye,
   SquarePen,
   BookText,
+  Star,
+  Calendar,
+  Tag,
 } from "lucide-react";
 import {
   Table,
@@ -92,9 +94,10 @@ const AllStudentsTable = ({ courses }) => {
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[100px]">Course</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead>Start Date</TableHead>
+                  <TableHead>Featured</TableHead>
+                  <TableHead>Price</TableHead>
                   <TableHead>Students</TableHead>
-                  <TableHead>Assignments</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -112,27 +115,44 @@ const AllStudentsTable = ({ courses }) => {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant={course.is_active ? "default" : "secondary"}
-                      >
-                        {course.is_active ? "Active" : "Inactive"}
-                      </Badge>
+                      <div className="flex items-center">
+                        <Calendar className="h-4 w-4 mr-1 text-muted-foreground" />
+                        <span>{course.start_date || "Not set"}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {course.is_featured ? (
+                        <Badge variant="default">
+                          <Star className="h-3 w-3 mr-1" />
+                          Featured
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary">Regular</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center">
+                        <div className="flex flex-col">
+                          {course.discount_price ? (
+                            <>
+                              <span className="line-through text-sm text-muted-foreground">
+                                ${course.price.toFixed(2)}
+                              </span>
+                              <span className="text-primary font-semibold">
+                                ${course.discount_price.toFixed(2)}
+                              </span>
+                            </>
+                          ) : (
+                            <span>${course.price.toFixed(2)}</span>
+                          )}
+                        </div>
+                      </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center">
                         <Users className="h-4 w-4 mr-1 text-muted-foreground" />
                         <span>{course.students || 0}</span>
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      {course.assignments ? (
-                        <div className="flex items-center">
-                          <Bookmark className="h-4 w-4 mr-1 text-muted-foreground" />
-                          <span>{course.assignments}</span>
-                        </div>
-                      ) : (
-                        "-"
-                      )}
                     </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>

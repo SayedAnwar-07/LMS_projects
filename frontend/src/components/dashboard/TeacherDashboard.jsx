@@ -30,7 +30,9 @@ import {
   Loader2,
   BookOpen,
   Users,
+  Star,
   Bookmark,
+  Award,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -49,8 +51,9 @@ import {
 import AllStudentsTable from "./AllStudentsTable";
 import { fetchCourses, selectAllCourses } from "@/redux/features/courseSlice";
 import { BackButton } from "../BackButton";
+import { Progress } from "@/components/ui/progress";
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 
 const TeacherDashboard = () => {
   const dispatch = useDispatch();
@@ -72,7 +75,6 @@ const TeacherDashboard = () => {
     dispatch(fetchCourses());
   }, [dispatch]);
 
-  // Check authentication and fetch dashboard data
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
 
@@ -81,7 +83,6 @@ const TeacherDashboard = () => {
       return;
     }
 
-    // If we have a token but no user data, verify token and fetch profile
     if (token && !user) {
       dispatch(verifyToken())
         .unwrap()
@@ -92,16 +93,12 @@ const TeacherDashboard = () => {
     }
   }, [dispatch, user, navigate]);
 
-  // Once authenticated, check role and fetch dashboard data
   useEffect(() => {
     if (isAuthenticated && user) {
-      // Redirect if not teacher
       if (user.role !== "teacher") {
         navigate("/unauthorized");
         return;
       }
-
-      // Fetch dashboard data for teacher
       dispatch(fetchTeacherDashboard());
     }
   }, [dispatch, isAuthenticated, user, navigate]);
@@ -120,20 +117,17 @@ const TeacherDashboard = () => {
     }));
   };
 
-  // Prepare pie chart data
-  const preparePieData = () => {
+  const prepareFeaturedData = () => {
     if (!data) return [];
-
     return [
-      { name: "Active Courses", value: data.active_courses || 0 },
+      { name: "Featured", value: data.total_featured_courses || 0 },
       {
-        name: "Inactive Courses",
-        value: (data.total_courses || 0) - (data.active_courses || 0),
+        name: "Regular",
+        value: (data.total_courses || 0) - (data.total_featured_courses || 0),
       },
     ];
   };
 
-  // Show loading state while verifying auth
   if (authLoading || (!user && isAuthenticated)) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -142,10 +136,9 @@ const TeacherDashboard = () => {
     );
   }
 
-  // Show error if dashboard data fails to load
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 min-h-screen">
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
@@ -165,7 +158,6 @@ const TeacherDashboard = () => {
     );
   }
 
-  // Show skeleton loading for dashboard data
   if (loading || !data) {
     return (
       <div className="container mx-auto px-4 py-8 space-y-8">
@@ -222,90 +214,182 @@ const TeacherDashboard = () => {
     // eslint-disable-next-line no-unused-vars
     courses = [],
     total_courses = 0,
-    active_courses = 0,
     total_students = 0,
+    total_featured_courses = 0,
   } = data;
 
   const chartData = prepareChartData();
-  const pieData = preparePieData();
+  const featuredData = prepareFeaturedData();
+  const featuredPercentage =
+    total_courses > 0
+      ? Math.round((total_featured_courses / total_courses) * 100)
+      : 0;
 
   return (
     <div className="container mx-auto px-4 pb-8 space-y-6">
       <BackButton />
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">
-            Welcome back, {teacher?.full_name || "Teacher"}!
-          </p>
+
+      {/* Header Section with Profile */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <img
+              src={teacher?.avatar || "/default-avatar.png"}
+              alt="Profile"
+              className="w-16 h-16 rounded-full object-cover border-2 border-primary"
+            />
+            <Badge className="absolute -bottom-2 -right-2 bg-green-500 text-white">
+              Teacher
+            </Badge>
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">
+              Welcome, {teacher?.full_name || "Teacher"}!
+            </h1>
+            <p className="text-muted-foreground">{teacher?.email}</p>
+          </div>
         </div>
         <div className="flex items-center space-x-4">
-          <Badge variant="secondary" className="text-sm">
+          <Badge variant="outline" className="text-sm flex items-center gap-2">
+            <Bookmark className="h-4 w-4 text-primary" />
             {new Date().toLocaleDateString("en-US", {
               weekday: "long",
-              year: "numeric",
-              month: "long",
+              month: "short",
               day: "numeric",
             })}
           </Badge>
         </div>
       </div>
 
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
+      {/* Stats Overview Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Total Courses Card */}
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Courses</CardTitle>
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
+            <BookOpen className="h-5 w-5 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{total_courses}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {active_courses} active courses
-            </p>
+            <div className="text-3xl font-bold">{total_courses}</div>
+            <div className="flex items-center gap-2 mt-2">
+              <Progress value={100} className="h-2" />
+              <span className="text-xs text-muted-foreground">All courses</span>
+            </div>
           </CardContent>
+          <CardFooter className="text-xs text-muted-foreground">
+            You're teaching {total_courses} courses
+          </CardFooter>
         </Card>
 
-        <Card>
+        {/* Total Students Card */}
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Total Students
             </CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="h-5 w-5 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{total_students}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Across all courses
-            </p>
+            <div className="text-3xl font-bold">{total_students}</div>
+            <div className="flex items-center gap-2 mt-2">
+              <Progress
+                value={Math.min(100, total_students)}
+                className="h-2"
+                indicatorColor="bg-green-500"
+              />
+              <span className="text-xs text-muted-foreground">
+                Across all courses
+              </span>
+            </div>
           </CardContent>
+          <CardFooter className="text-xs text-muted-foreground">
+            Average:{" "}
+            {total_courses > 0 ? Math.round(total_students / total_courses) : 0}{" "}
+            students per course
+          </CardFooter>
         </Card>
 
-        <Card>
+        {/* Featured Courses Card */}
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Active Courses
+              Featured Courses
             </CardTitle>
-            <Bookmark className="h-4 w-4 text-muted-foreground" />
+            <Star className="h-5 w-5 text-yellow-500 fill-yellow-200" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{active_courses}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {Math.round((active_courses / total_courses) * 100)}% of total
-            </p>
+            <div className="text-3xl font-bold">{total_featured_courses}</div>
+            <div className="flex items-center gap-2 mt-2">
+              <Progress
+                value={featuredPercentage}
+                className="h-2"
+                indicatorColor="bg-yellow-500"
+              />
+              <span className="text-xs text-muted-foreground">
+                {featuredPercentage}% of total
+              </span>
+            </div>
           </CardContent>
+          <CardFooter className="text-xs text-muted-foreground">
+            {total_featured_courses > 0
+              ? "Great job!"
+              : "Consider featuring some courses"}
+          </CardFooter>
+        </Card>
+
+        {/* Engagement Card */}
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Engagement Score
+            </CardTitle>
+            <Award className="h-5 w-5 text-purple-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">
+              {total_courses > 0
+                ? Math.round((total_students / (total_courses * 50)) * 100)
+                : 0}
+              /100
+            </div>
+            <div className="flex items-center gap-2 mt-2">
+              <Progress
+                value={
+                  total_courses > 0
+                    ? Math.round((total_students / (total_courses * 50)) * 100)
+                    : 0
+                }
+                className="h-2"
+                indicatorColor="bg-purple-500"
+              />
+              <span className="text-xs text-muted-foreground">
+                Based on student enrollment
+              </span>
+            </div>
+          </CardContent>
+          <CardFooter className="text-xs text-muted-foreground">
+            {total_students > 50 ? "Excellent engagement!" : "Keep growing!"}
+          </CardFooter>
         </Card>
       </div>
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="h-[350px]">
+        {/* Students per Course Bar Chart */}
+        <Card className="h-[350px] border border-gray-200 shadow-sm">
           <CardHeader>
-            <CardTitle>Students per Course</CardTitle>
-            <CardDescription>
-              Distribution of students across your courses
-            </CardDescription>
+            <div className="flex justify-between items-center">
+              <div>
+                <CardTitle>Students per Course</CardTitle>
+                <CardDescription>
+                  Distribution of students across your courses
+                </CardDescription>
+              </div>
+              <Badge variant="outline" className="flex items-center gap-1">
+                <Users className="h-3 w-3" />
+                {total_students} total
+              </Badge>
+            </div>
           </CardHeader>
           <CardContent className="h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -318,27 +402,50 @@ const TeacherDashboard = () => {
                   bottom: 5,
                 }}
               >
-                <CartesianGrid strokeDasharray="3 3" />
+                <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                 <XAxis dataKey="name" />
                 <YAxis />
-                <Tooltip />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "white",
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                    border: "1px solid #e2e8f0",
+                  }}
+                />
                 <Legend />
-                <Bar dataKey="students" fill="#8884d8" name="Students" />
+                <Bar
+                  dataKey="students"
+                  fill="#4f46e5"
+                  name="Students"
+                  radius={[4, 4, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card className="h-[350px]">
+        {/* Featured vs Regular Pie Chart */}
+        <Card className="h-[350px] border border-gray-200 shadow-sm">
           <CardHeader>
-            <CardTitle>Course Status</CardTitle>
-            <CardDescription>Active vs Inactive courses</CardDescription>
+            <div className="flex justify-between items-center">
+              <div>
+                <CardTitle>Course Types</CardTitle>
+                <CardDescription>
+                  Featured vs regular courses breakdown
+                </CardDescription>
+              </div>
+              <Badge variant="outline" className="flex items-center gap-1">
+                <Star className="h-3 w-3" />
+                {total_featured_courses} featured
+              </Badge>
+            </div>
           </CardHeader>
           <CardContent className="h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={pieData}
+                  data={featuredData}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
@@ -349,31 +456,59 @@ const TeacherDashboard = () => {
                     `${name}: ${(percent * 100).toFixed(0)}%`
                   }
                 >
-                  {pieData.map((entry, index) => (
+                  {featuredData.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={COLORS[index % COLORS.length]}
                     />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip
+                  formatter={(value) => [`${value} courses`, "Count"]}
+                  contentStyle={{
+                    backgroundColor: "white",
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                    border: "1px solid #e2e8f0",
+                  }}
+                />
+                <Legend />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>
-          <CardFooter className="flex justify-center">
-            <div className="flex space-x-4">
-              {pieData.map((entry, index) => (
-                <div key={`legend-${index}`} className="flex items-center">
-                  <div
-                    className="w-3 h-3 rounded-full mr-2"
-                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                  />
-                  <span className="text-sm">{entry.name}</span>
-                </div>
-              ))}
-            </div>
-          </CardFooter>
         </Card>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Button
+          variant="outline"
+          className="flex flex-col items-center justify-center h-24 gap-2"
+        >
+          <BookOpen className="h-6 w-6" />
+          <span>Create Course</span>
+        </Button>
+        <Button
+          variant="outline"
+          className="flex flex-col items-center justify-center h-24 gap-2"
+        >
+          <Users className="h-6 w-6" />
+          <span>Manage Students</span>
+        </Button>
+        <Button
+          variant="outline"
+          className="flex flex-col items-center justify-center h-24 gap-2"
+        >
+          <Star className="h-6 w-6" />
+          <span>Feature Course</span>
+        </Button>
+        <Button
+          variant="outline"
+          className="flex flex-col items-center justify-center h-24 gap-2"
+        >
+          <Award className="h-6 w-6" />
+          <span>View Analytics</span>
+        </Button>
       </div>
 
       {/* Courses List */}

@@ -288,6 +288,9 @@ def teacher_dashboard(request):
         course_serializer = CourseSerializer(courses, many=True)
 
         total_courses = courses.count()
+        total_students = sum(course.students for course in courses)  
+        total_featured_courses = courses.filter(is_featured=True).count() 
+        print("All featured course",total_featured_courses)
         
         response_data = {
             "status": "success",
@@ -303,11 +306,12 @@ def teacher_dashboard(request):
                 },
                 'stats': {
                     'total_courses': total_courses,
+                    'total_students': total_students,
+                    'total_featured_courses': total_featured_courses,
                 },
                 'courses': course_serializer.data,
             }
         }
-        
         return Response(response_data, status=status.HTTP_200_OK)
         
     except Exception as e:

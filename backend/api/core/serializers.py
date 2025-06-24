@@ -112,7 +112,6 @@ class PaymentSerializer(serializers.Serializer):
     payment_intent_id = serializers.CharField(required=False)
     amount = serializers.DecimalField(max_digits=10, decimal_places=2, required=False)
     
-    
 
 
 class QuestionAnswerSerializer(serializers.ModelSerializer):

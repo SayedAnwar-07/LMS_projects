@@ -1,6 +1,5 @@
 import FeaturedCourses from "@/components/home/FeaturedCourses";
 import Hero from "@/components/home/Hero";
-import OurProcess from "@/components/home/OurProcess";
 import React from "react";
 
 const Home = () => {
@@ -8,7 +7,6 @@ const Home = () => {
     <div>
       <Hero />
       <FeaturedCourses />
-      <OurProcess />
     </div>
   );
 };
