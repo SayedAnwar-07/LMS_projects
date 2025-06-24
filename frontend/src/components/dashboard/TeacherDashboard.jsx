@@ -48,6 +48,7 @@ import {
 } from "recharts";
 import AllStudentsTable from "./AllStudentsTable";
 import { fetchCourses, selectAllCourses } from "@/redux/features/courseSlice";
+import { BackButton } from "../BackButton";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
@@ -229,7 +230,8 @@ const TeacherDashboard = () => {
   const pieData = preparePieData();
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-6">
+    <div className="container mx-auto px-4 pb-8 space-y-6">
+      <BackButton />
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>

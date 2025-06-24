@@ -5,8 +5,8 @@ import {
   selectAllCourses,
   selectCourseLoading,
   selectCourseError,
-} from "../redux/features/courseSlice";
-import CourseCard from "../components/CourseCard";
+} from "../../redux/features/courseSlice";
+import CourseCard from "../../components/CourseCard";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";

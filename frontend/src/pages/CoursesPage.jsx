@@ -19,6 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import CourseCard from "@/components/CourseCard";
 import { Skeleton } from "@/components/ui/skeleton";
+import { BackButton } from "@/components/BackButton";
 
 const CoursesPage = () => {
   const dispatch = useDispatch();
@@ -68,6 +69,7 @@ const CoursesPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <BackButton />
       {/* Page Header */}
       <div className="text-center mb-12">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">

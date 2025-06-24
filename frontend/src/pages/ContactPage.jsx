@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { BackButton } from "@/components/BackButton";
 
 const ContactPage = () => {
   const contactMethods = [
@@ -34,6 +35,7 @@ const ContactPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-12">
+      <BackButton/>
       {/* Hero Section */}
       <section className="text-center mb-16">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Contact Us</h1>

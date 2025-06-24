@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, X, Loader2, AlertTriangle } from "lucide-react";
+import { BackButton } from "./BackButton";
 
 export function UpdateCourse() {
   const dispatch = useDispatch();
@@ -167,8 +168,9 @@ export function UpdateCourse() {
   };
 
   return (
-    <div className="container mx-auto py-8">
-      <Card>
+    <div className="container mx-auto pb-8">
+      <BackButton />
+      <Card className="mt-4">
         <CardHeader>
           <CardTitle>Update Course</CardTitle>
         </CardHeader>

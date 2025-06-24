@@ -16,6 +16,7 @@ import {
 } from "../redux/features/paymentSlice";
 import PaymentForm from "./PaymentForm";
 import { toast } from "react-toastify";
+import { BackButton } from "@/components/BackButton";
 
 const stripePromise = loadStripe(
   "pk_test_51RbwOQDCq52O5K5oOP8pYDX4KLNbsvlu3kYXlL8O8TiJP18uXBF5mvxP2eJXiSnYvFL5Uc55sJpkq0mgyLmUQPiU00r4hGQmGs"
@@ -95,6 +96,7 @@ const PaymentPage = () => {
 
   return (
     <div className="container mx-auto p-4">
+      <BackButton />
       <Elements stripe={stripePromise} options={options}>
         <PaymentForm
           courseDetails={{

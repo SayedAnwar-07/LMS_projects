@@ -1,12 +1,11 @@
 import React, { useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Star,
   Users,
   BookOpen,
   Calendar,
-  ChevronLeft,
   Check,
   Play,
   Download,
@@ -28,10 +27,10 @@ import {
   selectEnrollmentChecking,
   selectIsEnrolled,
 } from "@/redux/features/paymentSlice";
+import { BackButton } from "@/components/BackButton";
 
 const CourseDetailPage = () => {
   const { courseId } = useParams();
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   // Get course data from Redux store
@@ -97,27 +96,13 @@ const CourseDetailPage = () => {
       </div>
     );
   }
+  console.log(`http://127.0.0.1:8000${selectedCourse.banner}`);
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      {/* Header with back button and breadcrumbs */}
-      <header className="bg-white border-b border-gray-200 py-4">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between">
-            <Button
-              variant="ghost"
-              onClick={() => navigate(-1)}
-              className="text-gray-600"
-            >
-              <ChevronLeft className="h-5 w-5 mr-1" />
-              Back
-            </Button>
-          </div>
-        </div>
-      </header>
-
       <main className="container mx-auto px-4 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
+        <BackButton />
+        <div className="flex flex-col lg:flex-row gap-8 mt-6">
           {/* Main content */}
           <div className="lg:w-2/3">
             {/* Course title and rating */}
@@ -280,14 +265,22 @@ const CourseDetailPage = () => {
               {/* Price and enrollment */}
               <div className="p-6 border-b">
                 <div className="flex justify-between items-center mb-4">
-                  <span className="text-2xl font-bold">
-                    ${selectedCourse.discounted_price || selectedCourse.price}
-                  </span>
-                  {selectedCourse.discounted_price && (
-                    <span className="text-gray-500 line-through">
-                      ${selectedCourse.price}
-                    </span>
-                  )}
+                  <div className="flex items-center">
+                    {selectedCourse.discount_price ? (
+                      <>
+                        <span className="text-gray-400 line-through text-lg mr-2">
+                          ${selectedCourse.price}
+                        </span>
+                        <span className="font-bold text-black">
+                          ${selectedCourse.discount_price}
+                        </span>
+                      </>
+                    ) : (
+                      <span className="font-bold text-black text-lg">
+                        ${selectedCourse.price}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {enrollmentChecking ? (

@@ -14,6 +14,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
+import { BackButton } from "@/components/BackButton";
 
 const PaymentComplete = () => {
   const { courseId } = useParams();
@@ -74,6 +75,7 @@ const PaymentComplete = () => {
 
   return (
     <div className="container mx-auto py-8">
+      <BackButton />
       <div className="max-w-2xl mx-auto">
         <Card>
           <CardHeader

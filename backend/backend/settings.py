@@ -16,7 +16,7 @@ load_dotenv(dotenv_path=BASE_DIR / '.env', override=True)
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+DEBUG =True
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 
@@ -107,12 +107,14 @@ USE_I18N = True
 USE_TZ = True
 
 # Static and Media
-STATIC_URL = "/static/"
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
+
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -159,7 +161,10 @@ STRIPE_PUBLISHABLE_KEY = os.environ.get('PUBLISHABLE_KEY')
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:4000",
     "http://127.0.0.1:3000",
+    "https://lms-projects-backend-icon.onrender.com"
 ]
+
+# CSRF_TRUSTED_ORIGINS = ['https://lms-projects-backend-icon.onrender.com']
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
     "Authorization",

@@ -62,12 +62,12 @@ class CourseAdmin(admin.ModelAdmin):
     )
 
     def category_link(self, obj):
-        return format_html('<a href="/admin/courses/category/{}/change/">{}</a>', 
+        return format_html('<a href="/admin/courses/category/{}/">{}</a>', 
                          obj.category.id, obj.category.title)
     category_link.short_description = 'Category'
     
     def instructor_link(self, obj):
-        return format_html('<a href="/admin/accounts/user/{}/change/">{}</a>', 
+        return format_html('<a href="/admin/accounts/user/{}/">{}</a>', 
                          obj.instructor.id, obj.instructor.full_name)
     instructor_link.short_description = 'Instructor'
     
@@ -107,13 +107,13 @@ class LessonAdmin(admin.ModelAdmin):
     list_select_related = ('course', 'section')
     
     def course_link(self, obj):
-        return format_html('<a href="/admin/courses/course/{}/change/">{}</a>', 
+        return format_html('<a href="/admin/courses/course/{}/">{}</a>', 
                           obj.course.id, obj.course.title)
     course_link.short_description = 'Course'
     
     def section_link(self, obj):
         if obj.section:
-            return format_html('<a href="/admin/courses/curriculumsection/{}/change/">{}</a>', 
+            return format_html('<a href="/admin/courses/curriculumsection/{}/">{}</a>', 
                              obj.section.id, obj.section.title)
         return "-"
     section_link.short_description = 'Section'
@@ -139,7 +139,7 @@ class MaterialAdmin(admin.ModelAdmin):
     list_per_page = 30
     
     def course_link(self, obj):
-        return format_html('<a href="/admin/courses/course/{}/change/">{}</a>', 
+        return format_html('<a href="/admin/courses/course/{}/">{}</a>', 
                           obj.course.id, obj.course.title)
     course_link.short_description = 'Course'
     
@@ -169,12 +169,12 @@ class EnrollmentAdmin(admin.ModelAdmin):
     list_select_related = ('user', 'course')
     
     def student_link(self, obj):
-        return format_html('<a href="/admin/accounts/user/{}/change/">{}</a>', 
+        return format_html('<a href="/admin/accounts/user/{}/">{}</a>', 
                          obj.user.id, obj.user.full_name)
     student_link.short_description = 'Student'
     
     def course_link(self, obj):
-        return format_html('<a href="/admin/courses/course/{}/change/">{}</a>', 
+        return format_html('<a href="/admin/courses/course/{}/">{}</a>', 
                           obj.course.id, obj.course.title)
     course_link.short_description = 'Course'
     
@@ -222,12 +222,12 @@ class QuestionAnswerAdmin(admin.ModelAdmin):
     truncated_description.short_description = 'Question'
     
     def student_link(self, obj):
-        return format_html('<a href="/admin/accounts/user/{}/change/">{}</a>', 
+        return format_html('<a href="/admin/accounts/user/{}/">{}</a>', 
                          obj.user.id, obj.user.full_name)
     student_link.short_description = 'Student'
     
     def lesson_link(self, obj):
-        return format_html('<a href="/admin/courses/lesson/{}/change/">{}</a>', 
+        return format_html('<a href="/admin/courses/lesson/{}/">{}</a>', 
                           obj.lesson.id, obj.lesson.title)
     lesson_link.short_description = 'Lesson'
     
@@ -249,7 +249,7 @@ class CurriculumSectionAdmin(admin.ModelAdmin):
     inlines = [LessonInline]
     
     def course_link(self, obj):
-        return format_html('<a href="/admin/courses/course/{}/change/">{}</a>', 
+        return format_html('<a href="/admin/courses/course/{}/">{}</a>', 
                           obj.course.id, obj.course.title)
     course_link.short_description = 'Course'
     

@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, X } from "lucide-react";
+import { BackButton } from "./BackButton";
 
 // Form schema validation
 const courseFormSchema = z.object({
@@ -187,8 +188,9 @@ export function CreateCourse() {
   };
 
   return (
-    <div className="container mx-auto py-8">
-      <Card>
+    <div className="container mx-auto pb-8">
+      <BackButton />
+      <Card className="mt-4">
         <CardHeader>
           <CardTitle>Create New Course</CardTitle>
         </CardHeader>

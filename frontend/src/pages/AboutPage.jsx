@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Rocket, Users, BookOpen, Award } from "lucide-react";
+import { BackButton } from "@/components/BackButton";
 
 const AboutPage = () => {
   const stats = [
@@ -28,6 +29,7 @@ const AboutPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-12">
+       <BackButton/>
       {/* Hero Section */}
       <section className="text-center mb-16">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
