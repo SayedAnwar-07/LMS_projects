@@ -6,7 +6,7 @@ export const fetchTeacherDashboard = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get("/teacher-dashboard/");
-      return response.data.data; 
+      return response.data.data;
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message ||
@@ -24,7 +24,7 @@ const initialState = {
     avatar: null,
   },
   total_courses: 0,
-  active_courses: 0,
+  total_featured_courses: 0,
   total_students: 0,
   courses: [],
   loading: false,
@@ -47,7 +47,8 @@ const dashboardSlice = createSlice({
         state.loading = false;
         state.teacher = action.payload.teacher || initialState.teacher;
         state.total_courses = action.payload.stats?.total_courses || 0;
-        state.active_courses = action.payload.stats?.active_courses || 0;
+        state.total_featured_courses =
+          action.payload.stats?.total_featured_courses || 0;
         state.total_students = action.payload.stats?.total_students || 0;
         state.courses = action.payload.courses || [];
       })
@@ -63,6 +64,7 @@ export const selectTeacherData = (state) => ({
   teacher: state.dashboard.teacher,
   total_courses: state.dashboard.total_courses,
   active_courses: state.dashboard.active_courses,
+  total_featured_courses: state.dashboard.total_featured_courses,
   total_students: state.dashboard.total_students,
   courses: state.dashboard.courses,
 });

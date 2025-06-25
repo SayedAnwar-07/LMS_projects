@@ -290,7 +290,6 @@ def teacher_dashboard(request):
         total_courses = courses.count()
         total_students = sum(course.students for course in courses)  
         total_featured_courses = courses.filter(is_featured=True).count() 
-        print("All featured course",total_featured_courses)
         
         response_data = {
             "status": "success",

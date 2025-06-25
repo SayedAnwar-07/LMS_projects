@@ -119,6 +119,7 @@ const TeacherDashboard = () => {
 
   const prepareFeaturedData = () => {
     if (!data) return [];
+
     return [
       { name: "Featured", value: data.total_featured_courses || 0 },
       {
