@@ -19,9 +19,10 @@ export const registerUser = createAsyncThunk(
       const response = await api.post("users/register/", userData);
       return response.data;
     } catch (error) {
+      console.log("Full error response:", error.response);
       return rejectWithValue(
         error.response?.data || {
-          message: "Registration failed",
+          message: "Registration failed. Please check your details.",
         }
       );
     }
@@ -236,9 +237,7 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
-        state.error =
-          action.payload?.message ||
-          "This email already exist or Registration failed for some technical issues";
+        state.error = action.payload?.message || "Registration failed ";
       })
 
       // OTP Verify

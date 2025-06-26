@@ -57,7 +57,7 @@ def registerView(request):
                         "role": user.role,
                         "full_name": user.full_name,
                         "mobile_no": user.mobile_no,
-                        "avatar": user.avatar  # Direct URL
+                        "avatar": user.avatar  
                     }
                 }
                 return Response(response_data, status=status.HTTP_201_CREATED)

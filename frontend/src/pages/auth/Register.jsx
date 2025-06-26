@@ -146,23 +146,25 @@ const Register = () => {
 
   const onSubmit = async (data) => {
     try {
+      let imageUrl = "";
+
       if (image) {
-        const imageUrl = await uploadToImgbb();
+        imageUrl = await uploadToImgbb();
         if (!imageUrl) return;
+      } else {
+        imageUrl =
+          "https://www.iconpacks.net/icons/2/free-user-icon-3296-thumb.png";
       }
 
-      await dispatch(registerUser(data)).unwrap();
+      const payload = {
+        ...data,
+        avatar: imageUrl,
+      };
+
+      
+      await dispatch(registerUser(payload)).unwrap();
     } catch (error) {
-      console.log("Registration error:", error);
-      console.log("Error payload:", error.payload);
-      if (error?.message?.includes("already exists")) {
-        setError("email", {
-          type: "manual",
-          message: error.message,
-        });
-      }
-      // Handle other errors
-      else if (error?.errors) {
+      if (error?.errors) {
         Object.keys(error.errors).forEach((key) => {
           setError(key, {
             type: "server",
@@ -189,7 +191,7 @@ const Register = () => {
           {/* Avatar Upload */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
-              Profile Picture (require)
+              Profile Picture (optional)
             </label>
             <div className="flex items-center space-x-4">
               <div className="relative">
@@ -295,9 +297,6 @@ const Register = () => {
             </div>
             {errors.email && (
               <p className="text-sm text-red-600">{errors.email.message}</p>
-            )}
-            {error && !errors.email && (
-              <div className="text-sm text-red-600 text-center">{error}</div>
             )}
           </div>
 
