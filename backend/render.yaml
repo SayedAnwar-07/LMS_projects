@@ -34,19 +34,27 @@ services:
         value: db.sqlite3
 
     buildCommand: |
-      # 1) install your deps
       pip install -r requirements.txt
-
-      # 2) collect static files
       python manage.py collectstatic --noinput
 
-      # 3) apply all migrations
+    preDeployCommand: |
+      # 1) apply all migrations
       python manage.py migrate --noinput
 
-      # 4) create a default superuser (only on first deploy)
-      DJANGO_SUPERUSER_USERNAME=admin \
-      DJANGO_SUPERUSER_EMAIL=admin@example.com \
-      DJANGO_SUPERUSER_PASSWORD=StrongPass123 \
-      python manage.py createsuperuser --noinput
-      startCommand: |
-      gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
+      # 2) idempotent superuser creation
+      python - <<'EOF'
+      from django.contrib.auth import get_user_model
+      User = get_user_model()
+      if not User.objects.filter(username='admin').exists():
+        User.objects.create_superuser(
+            username='admin',
+            email='admin@example.com',
+            password='StrongPass123'
+        )
+        print("🛡️ Superuser ‘admin’ created")
+      else:
+          print("🛡️ Superuser ‘admin’ already exists")
+      EOF
+
+    startCommand: |
+      gunicorn backend.wsgi:application --bind 0.0.0.0:$PORT

@@ -5,10 +5,12 @@ A full-stack Learning Management System built with Django REST Framework (backen
 ## Features
 
 - **User Roles**:
+
   - Students: Enroll in courses, track progress
   - Teachers: Create/update/delete courses, modules, and lessons
 
 - **Course Management**:
+
   - Dynamic module progression
   - Course enrollment via Stripe payment
   - Lesson content management
@@ -23,9 +25,10 @@ A full-stack Learning Management System built with Django REST Framework (backen
 ## Environment Variables
 
 ### Backend (.env)
+
 Create a `.env` file in the `backend` directory with the following variables:
 
-```env
+````env
 PUBLISHABLE_KEY=pk_test_51RbwOQDCq52O5K5oOP8pYDX4KLNbsvlu3kYXlL8O8TiJP18uXBF5mvxP2eJXiSnYvFL5Uc55sJpkq0mgyLmUQPiU00r4hGQmGs
 STRIPE_SECRET_KEY=sk_test_51RbwOQDCq52O5K5ofUDnOjx8vC8z0m0Pt56p0su2qU9eXbrQxr3WoF1LeiAY7TuAtyS9Wjfwx73OMYTdZPFks4bj00MHaO2oIs
 SECRET_KEY=django-insecure-%8w9=v^+e5y5u$%1s@kcd6y!zf8%@54^_5omevb
@@ -47,3 +50,4 @@ Create a `.env` file in the `backend` directory with the following variables:
 ```env
 VITE_NODE_ENV=production
 VITE_API_URL=http://127.0.0.1:8000
+````
