@@ -1,9 +1,19 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Star, Clock, Users, BookOpen, Calendar } from "lucide-react";
+import { useSelector } from "react-redux";
 
 const CourseCard = ({ course }) => {
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+
+  const handleDetailsClick = (e) => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      navigate("/login", { state: { from: `/courses/${course.id}` } });
+    }
+  };
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
@@ -87,8 +97,8 @@ const CourseCard = ({ course }) => {
         </div>
 
         {/* Action Button */}
-        <Link to={`/courses/${course.id}`}>
-          <Button className="w-full bg-black hover:bg-gray-800 text-white">
+        <Link to={`/courses/${course.id}`} onClick={handleDetailsClick}>
+          <Button className="w-full bg-black hover:bg-gray-800 text-white cursor-pointer">
             Details
           </Button>
         </Link>

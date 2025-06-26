@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
@@ -15,6 +15,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
 
   const { loading, error, isAuthenticated, user } = useSelector(
@@ -27,15 +28,20 @@ const Login = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      const redirectPath =
-        user?.role === "admin"
-          ? "/admin"
-          : user?.role === "teacher"
-          ? "/profile/me"
-          : "/profile/me";
-      navigate(redirectPath);
+      const fromPath = location.state?.from || "/";
+      if (fromPath === "/") {
+        const redirectPath =
+          user?.role === "admin"
+            ? "/admin"
+            : user?.role === "teacher"
+            ? "/profile/me"
+            : "/profile/me";
+        navigate(redirectPath);
+      } else {
+        navigate(fromPath);
+      }
     }
-  }, [isAuthenticated, navigate, user]);
+  }, [isAuthenticated, navigate, user, location.state]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
