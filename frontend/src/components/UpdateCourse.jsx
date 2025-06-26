@@ -33,7 +33,6 @@ export function UpdateCourse() {
   const [currentBanner, setCurrentBanner] = useState(null);
   const [error, setError] = useState(null);
   const [image, setImage] = useState(null);
-  const [imgURL, setImgURL] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
 
   const imgbbApiKey = "7d08988bd7149e734475cafb1b06041c";
@@ -66,7 +65,6 @@ export function UpdateCourse() {
 
         if (course.banner) {
           setCurrentBanner(course.banner);
-          setImgURL(course.banner);
         }
 
         reset({
@@ -85,6 +83,7 @@ export function UpdateCourse() {
           requirements: Array.isArray(course.requirements)
             ? course.requirements
             : JSON.parse(course.requirements || "[]"),
+          banner: course.banner,
         });
       } catch (error) {
         console.error("Error fetching course:", error);
@@ -103,28 +102,22 @@ export function UpdateCourse() {
     const file = e.target.files[0];
     if (file) {
       setImage(file);
-      setValue("banner", file);
-      setCurrentBanner(URL.createObjectURL(file));
+      const previewUrl = URL.createObjectURL(file);
+      setCurrentBanner(previewUrl);
     }
   };
 
-  const uploadToImgbb = async () => {
-    if (!image) return;
-
+  const uploadToImgbb = async (file) => {
     setUploadingImage(true);
     const formData = new FormData();
-    formData.append("image", image);
+    formData.append("image", file);
 
     try {
       const res = await axios.post(
         `https://api.imgbb.com/1/upload?key=${imgbbApiKey}`,
         formData
       );
-      const imageUrl = res.data.data.url;
-      setImgURL(imageUrl);
-      setValue("banner", imageUrl);
-      toast.success("Image uploaded successfully!");
-      return imageUrl;
+      return res.data.data.url;
     } catch (err) {
       console.error("Image upload failed:", err);
       toast.error("Image upload failed");
@@ -138,36 +131,24 @@ export function UpdateCourse() {
     try {
       setLoading(true);
 
-      // If a new image was selected, upload it first
-      let bannerUrl = imgURL;
-      if (image && !imgURL.includes("http")) {
-        bannerUrl = await uploadToImgbb();
+      if (image) {
+        const bannerUrl = await uploadToImgbb(image);
+        data.banner = bannerUrl;
+      } else if (!currentBanner) {
+        data.banner = null;
       }
 
-      const formData = new FormData();
-
-      // Append all fields
-      Object.keys(data).forEach((key) => {
-        if (key === "what_you_will_learn" || key === "requirements") {
-          formData.append(key, JSON.stringify(data[key]));
-        } else if (key === "banner") {
-          if (bannerUrl) {
-            formData.append(key, bannerUrl);
-          } else if (data[key] instanceof File) {
-            formData.append(key, data[key]);
-          }
-        } else if (data[key] !== null && data[key] !== undefined) {
-          formData.append(key, data[key]);
-        }
-      });
-
-      // Add instructor to the form data if required by backend
-      formData.append("instructor", watch("instructor") || "");
+      // Prepare the payload
+      const payload = {
+        ...data,
+        what_you_will_learn: JSON.stringify(data.what_you_will_learn || []),
+        requirements: JSON.stringify(data.requirements || []),
+      };
 
       await dispatch(
         updateCourse({
           id: courseId,
-          data: formData,
+          data: payload,
         })
       ).unwrap();
 
@@ -294,25 +275,13 @@ export function UpdateCourse() {
                     </SelectContent>
                   </Select>
                 </div>
-
+                {/* banner */}
                 <div className="space-y-2">
                   <label className="block text-sm font-medium">
-                    Course Banner
+                    Course Banner ( jpg/png/webp )
                   </label>
-                  {currentBanner && (
-                    <div className="mb-2">
-                      <img
-                        src={
-                          currentBanner.startsWith("blob:")
-                            ? currentBanner
-                            : { currentBanner }
-                        }
-                        alt="Current banner"
-                        className="h-32 object-cover rounded"
-                      />
-                    </div>
-                  )}
                   <Input
+                    id="banner-upload"
                     type="file"
                     accept="image/*"
                     onChange={handleImageChange}
@@ -327,8 +296,47 @@ export function UpdateCourse() {
                   <p className="text-sm text-muted-foreground">
                     Recommended size: 1200x600 pixels
                   </p>
+
+                  {currentBanner && (
+                    <div className="mt-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <p className="text-sm font-medium">Image Preview:</p>
+                        <div className="flex gap-2">
+                          {image && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setImage(null);
+                                const originalBanner = watch("banner");
+                                setCurrentBanner(originalBanner || null);
+                                document.getElementById("banner-upload").value =
+                                  "";
+                              }}
+                            >
+                              <X className="h-4 w-4 mr-1" /> Remove
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                      <div className="relative w-full max-w-md aspect-video rounded-md overflow-hidden border">
+                        <img
+                          src={currentBanner}
+                          alt="Course banner preview"
+                          className="w-full h-full object-cover"
+                          onLoad={() => {
+                            if (currentBanner.startsWith("blob:")) {
+                              URL.revokeObjectURL(currentBanner);
+                            }
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
 
+                {/* level */}
                 <div className="space-y-2">
                   <label className="block text-sm font-medium">Price ($)</label>
                   <Input
@@ -542,10 +550,10 @@ export function UpdateCourse() {
                   Cancel
                 </Button>
                 <Button type="submit" disabled={loading || uploadingImage}>
-                  {loading ? (
+                  {loading || uploadingImage ? (
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
                   ) : null}
-                  {loading ? "Updating..." : "Update Course"}
+                  {loading || uploadingImage ? "Updating..." : "Update Course"}
                 </Button>
               </div>
             </form>

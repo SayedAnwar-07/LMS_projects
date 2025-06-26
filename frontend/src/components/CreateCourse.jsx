@@ -33,9 +33,6 @@ const courseFormSchema = z.object({
   description: z.string().min(20, {
     message: "Description must be at least 20 characters.",
   }),
-  banner: z.instanceof(File, {
-    message: "Please upload a banner image.",
-  }),
   price: z.number().min(0, {
     message: "Price must be a positive number.",
   }),
@@ -71,7 +68,12 @@ export function CreateCourse() {
   const imgbbApiKey = "7d08988bd7149e734475cafb1b06041c";
 
   const handleImageChange = (e) => {
-    setImage(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      const previewUrl = URL.createObjectURL(file);
+      setImgURL(previewUrl);
+    }
   };
 
   const uploadToImgbb = async () => {
@@ -92,7 +94,6 @@ export function CreateCourse() {
     }
   };
 
-  // Initialize the form
   const {
     register,
     handleSubmit,
@@ -293,12 +294,13 @@ export function CreateCourse() {
                   <p className="text-sm text-red-500">{errors.level.message}</p>
                 )}
               </div>
-
+              {/* banner */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium">
                   Course Banner
                 </label>
                 <Input
+                  id="banner-upload"
                   type="file"
                   accept="image/*"
                   onChange={handleImageChange}
@@ -312,13 +314,34 @@ export function CreateCourse() {
                   </p>
                 )}
                 {imgURL && (
-                  <div>
-                    <p>Uploaded Image URL:</p>
-                    <a href={imgURL} target="_blank" rel="noreferrer">
-                      {imgURL}
-                    </a>
-                    <br />
-                    <img src={imgURL} alt="Uploaded" width="200" />
+                  <div className="mt-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <p className="text-sm font-medium">Image Preview:</p>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setImage(null);
+                          setImgURL("");
+                          document.getElementById("banner-upload").value = "";
+                        }}
+                      >
+                        <X className="h-4 w-4 mr-1" /> Remove
+                      </Button>
+                    </div>
+                    <div className="relative w-full max-w-md aspect-video rounded-md overflow-hidden border">
+                      <img
+                        src={imgURL}
+                        alt="Course banner preview"
+                        className="w-full h-full object-cover"
+                        onLoad={() => {
+                          if (imgURL.startsWith("blob:")) {
+                            URL.revokeObjectURL(imgURL);
+                          }
+                        }}
+                      />
+                    </div>
                   </div>
                 )}
               </div>

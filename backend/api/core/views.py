@@ -178,6 +178,8 @@ def update_course(request, pk):
     data = request.data.copy()
     if 'banner' not in data and hasattr(course, 'banner'):
         data['banner'] = course.banner
+    elif hasattr(data['banner'], 'read'):
+        pass
 
     serializer = CourseSerializer(course, data=data, partial=True)
     if serializer.is_valid():

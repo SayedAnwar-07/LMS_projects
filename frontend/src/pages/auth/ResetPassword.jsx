@@ -8,15 +8,17 @@ import {
 } from "@/redux/features/authSlice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Mail, Lock, Key } from "lucide-react";
+import { Mail, Lock, Key, Eye, EyeOff } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 
 const ResetPassword = () => {
   const [otpTimer, setOtpTimer] = useState(
-    import.meta.env.VITE_OTP_EXPIRY_MINUTES * 60 || 900
+    import.meta.env.VITE_OTP_EXPIRY_MINUTES * 60 || 500
   );
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -56,6 +58,12 @@ const ResetPassword = () => {
     }
     return () => clearInterval(timer);
   }, [otpTimer]);
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+  };
 
   const onSubmit = async (data) => {
     try {
@@ -162,8 +170,7 @@ const ResetPassword = () => {
               </label>
               {otpTimer > 0 ? (
                 <span className="text-sm text-gray-500">
-                  Expires in: {Math.floor(otpTimer / 60)}:
-                  {String(otpTimer % 60).padStart(2, "0")}
+                  Expires in: {formatTime(otpTimer)} min
                 </span>
               ) : (
                 <span className="text-sm text-red-600">OTP expired</span>
@@ -211,8 +218,8 @@ const ResetPassword = () => {
               </div>
               <Input
                 id="new_password"
-                type="password"
-                className="pl-10 w-full"
+                type={showPassword ? "text" : "password"}
+                className="pl-10 w-full pr-10"
                 placeholder="At least 8 characters"
                 disabled={loading}
                 {...register("new_password", {
@@ -223,6 +230,17 @@ const ResetPassword = () => {
                   },
                 })}
               />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5 text-gray-400" />
+                ) : (
+                  <Eye className="h-5 w-5 text-gray-400" />
+                )}
+              </button>
             </div>
             {errors.new_password && (
               <p className="text-sm text-red-600">
@@ -245,8 +263,8 @@ const ResetPassword = () => {
               </div>
               <Input
                 id="confirm_password"
-                type="password"
-                className="pl-10 w-full"
+                type={showConfirmPassword ? "text" : "password"}
+                className="pl-10 w-full pr-10"
                 placeholder="Confirm your password"
                 disabled={loading}
                 {...register("confirm_password", {
@@ -255,6 +273,17 @@ const ResetPassword = () => {
                     value === watch("new_password") || "Passwords do not match",
                 })}
               />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="h-5 w-5 text-gray-400" />
+                ) : (
+                  <Eye className="h-5 w-5 text-gray-400" />
+                )}
+              </button>
             </div>
             {errors.confirm_password && (
               <p className="text-sm text-red-600">

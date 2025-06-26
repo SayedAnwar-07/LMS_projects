@@ -16,7 +16,43 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser, resetAuthState } from "@/redux/features/authSlice";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import axios from "axios";
+
+const registerSchema = z
+  .object({
+    username: z
+      .string()
+      .min(3, "Username must be at least 3 characters")
+      .max(20, "Username must be less than 20 characters"),
+    full_name: z
+      .string()
+      .min(3, "Full name must be at least 3 characters")
+      .max(50, "Full name must be less than 50 characters"),
+    email: z.string().email("Invalid email address"),
+    mobile_no: z
+      .string()
+      .min(10, "Mobile number must be at least 11 digits")
+      .max(15, "Mobile number must be less than 15 digits"),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .regex(/[0-9]/, "Password must contain at least one number")
+      .regex(
+        /[^a-zA-Z0-9]/,
+        "Password must contain at least one special character"
+      ),
+    password2: z.string(),
+    role: z.enum(["student", "teacher"]),
+    avatar: z.string().optional(),
+  })
+  .refine((data) => data.password === data.password2, {
+    message: "Passwords do not match",
+    path: ["password2"],
+  });
 
 const Register = () => {
   const {
@@ -27,6 +63,7 @@ const Register = () => {
     setError,
     setValue,
   } = useForm({
+    resolver: zodResolver(registerSchema),
     defaultValues: {
       username: "",
       full_name: "",
@@ -56,7 +93,6 @@ const Register = () => {
     (state) => state.auth
   );
 
-  // Reset auth state when component mounts
   useEffect(() => {
     dispatch(resetAuthState());
   }, [dispatch]);
@@ -110,16 +146,23 @@ const Register = () => {
 
   const onSubmit = async (data) => {
     try {
-      // Upload image first if exists
       if (image) {
         const imageUrl = await uploadToImgbb();
-        if (!imageUrl) return; // Stop if image upload failed
+        if (!imageUrl) return;
       }
 
       await dispatch(registerUser(data)).unwrap();
     } catch (error) {
-      // Handle specific field errors from backend
-      if (error.errors) {
+      console.log("Registration error:", error);
+      console.log("Error payload:", error.payload);
+      if (error?.message?.includes("already exists")) {
+        setError("email", {
+          type: "manual",
+          message: error.message,
+        });
+      }
+      // Handle other errors
+      else if (error?.errors) {
         Object.keys(error.errors).forEach((key) => {
           setError(key, {
             type: "server",
@@ -129,12 +172,11 @@ const Register = () => {
       } else {
         setError("root", {
           type: "server",
-          message: error.message || "Registration failed",
+          message: error?.message || "Registration failed",
         });
       }
     }
   };
-
   return (
     <div className="bg-white flex items-center justify-center py-16">
       <div className="w-full max-w-md">
@@ -147,7 +189,7 @@ const Register = () => {
           {/* Avatar Upload */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
-              Profile Picture (Optional)
+              Profile Picture (require)
             </label>
             <div className="flex items-center space-x-4">
               <div className="relative">
@@ -187,7 +229,7 @@ const Register = () => {
               htmlFor="full_name"
               className="block text-sm font-medium text-gray-700"
             >
-              Full Name (Optional)
+              Full Name
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -201,6 +243,9 @@ const Register = () => {
                 className="pl-10 w-full"
               />
             </div>
+            {errors.full_name && (
+              <p className="text-sm text-red-600">{errors.full_name.message}</p>
+            )}
           </div>
 
           {/* Username */}
@@ -217,13 +262,7 @@ const Register = () => {
               </div>
               <Input
                 id="username"
-                {...register("username", {
-                  required: "Username is required",
-                  minLength: {
-                    value: 3,
-                    message: "Username must be at least 3 characters",
-                  },
-                })}
+                {...register("username")}
                 type="text"
                 placeholder="johndoe"
                 className="pl-10 w-full"
@@ -248,13 +287,7 @@ const Register = () => {
               </div>
               <Input
                 id="email"
-                {...register("email", {
-                  required: "Email is required",
-                  pattern: {
-                    value: /^\S+@\S+\.\S+$/,
-                    message: "Email is invalid",
-                  },
-                })}
+                {...register("email")}
                 type="email"
                 placeholder="you@example.com"
                 className="pl-10 w-full"
@@ -262,6 +295,9 @@ const Register = () => {
             </div>
             {errors.email && (
               <p className="text-sm text-red-600">{errors.email.message}</p>
+            )}
+            {error && !errors.email && (
+              <div className="text-sm text-red-600 text-center">{error}</div>
             )}
           </div>
 
@@ -271,7 +307,7 @@ const Register = () => {
               htmlFor="mobile_no"
               className="block text-sm font-medium text-gray-700"
             >
-              Mobile Number (Optional)
+              Mobile Number
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -285,6 +321,9 @@ const Register = () => {
                 className="pl-10 w-full"
               />
             </div>
+            {errors.mobile_no && (
+              <p className="text-sm text-red-600">{errors.mobile_no.message}</p>
+            )}
           </div>
 
           {/* Role Selection */}
@@ -324,13 +363,7 @@ const Register = () => {
               </div>
               <Input
                 id="password"
-                {...register("password", {
-                  required: "Password is required",
-                  minLength: {
-                    value: 8,
-                    message: "Password must be at least 8 characters",
-                  },
-                })}
+                {...register("password")}
                 type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
                 className="pl-10 w-full pr-10"
@@ -366,11 +399,7 @@ const Register = () => {
               </div>
               <Input
                 id="password2"
-                {...register("password2", {
-                  required: "Please confirm your password",
-                  validate: (value) =>
-                    value === watch("password") || "Passwords do not match",
-                })}
+                {...register("password2")}
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="••••••••"
                 className="pl-10 w-full pr-10"

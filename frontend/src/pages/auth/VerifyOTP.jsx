@@ -56,8 +56,8 @@ const VerifyOTP = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-gray-50 to-gray-100">
-      <Card className="w-full max-w-md shadow-lg">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-white">
+      <Card className="w-full max-w-md border-none shadow-none">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">
             Verify Your Email
