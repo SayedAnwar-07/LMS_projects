@@ -1,6 +1,9 @@
 # The Medhakosh - Online Learning Platform
 
-[![Live Demo](https://img.shields.io/badge/demo-live-green)](https://the-medhakosh.netlify.app/)
+
+## 🌐 Live Demonstration
+
+🔗 **Live Application URL:** [https://the-medhakosh.netlify.app/](https://the-medhakosh.netlify.app/)
 
 The Medhakosh is a comprehensive online learning platform where students can enroll in courses and track their progress, while teachers can create and manage educational content.
 
