@@ -32,15 +32,15 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-white border-t border-gray-200">
+    <footer className="bg-black border-t border-gray-200">
       <div className="container mx-auto px-4 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand Info */}
           <div className="space-y-4">
-            <Link to="/" className="text-2xl font-bold text-black">
+            <Link to="/" className="text-2xl font-bold text-white">
               The Medhakosh
             </Link>
-            <p className="text-gray-600 max-w-xs">
+            <p className="text-gray-50 max-w-xs">
               Empowering learners worldwide with expert-led courses and
               resources.
             </p>
@@ -49,7 +49,7 @@ const Footer = () => {
                 <Link
                   key={index}
                   to={social.href}
-                  className="text-gray-600 hover:text-black transition-colors"
+                  className="text-gray-50 hover:text-white transition-colors"
                 >
                   {social.icon}
                 </Link>
@@ -60,7 +60,7 @@ const Footer = () => {
           {/* Footer Links */}
           {footerLinks.map((column) => (
             <div key={column.title} className="space-y-4">
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-black">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-white">
                 {column.title}
               </h3>
               <ul className="space-y-2">
@@ -68,7 +68,7 @@ const Footer = () => {
                   <li key={link.name}>
                     <Link
                       to={link.href}
-                      className="text-gray-600 hover:text-black transition-colors"
+                      className="text-gray-50 hover:text-white transition-colors"
                     >
                       {link.name}
                     </Link>
@@ -80,10 +80,10 @@ const Footer = () => {
 
           {/* Newsletter */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-black">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-white">
               Newsletter
             </h3>
-            <p className="text-gray-600">
+            <p className="text-gray-50">
               Subscribe to get updates on new courses and offers.
             </p>
             <form className="flex flex-col space-y-2">
@@ -94,7 +94,7 @@ const Footer = () => {
               />
               <button
                 type="submit"
-                className="bg-black text-white py-2 px-4 rounded hover:bg-gray-800 transition-colors"
+                className="bg-white text-black py-2 px-4 rounded hover:bg-gray-300 transition-colors"
               >
                 Subscribe
               </button>
@@ -104,19 +104,16 @@ const Footer = () => {
 
         {/* Copyright */}
         <div className="border-t border-gray-200 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-600 text-sm">
+          <p className="text-gray-50 text-sm">
             © {new Date().getFullYear()} BrandName. All rights reserved.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link
-              to="/terms"
-              className="text-gray-600 hover:text-black text-sm"
-            >
+            <Link to="/terms" className="text-gray-50 hover:text-white text-sm">
               Terms of Service
             </Link>
             <Link
               to="/privacy"
-              className="text-gray-600 hover:text-black text-sm"
+              className="text-gray-50 hover:text-white text-sm"
             >
               Privacy Policy
             </Link>

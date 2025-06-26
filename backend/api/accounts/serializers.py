@@ -194,7 +194,7 @@ class UserLoginSerializer(serializers.Serializer):
         
 class UserProfileSerializer(serializers.ModelSerializer):
     avatar_url = serializers.SerializerMethodField()
-    avatar = serializers.URLField(required=False)  # Changed from ImageField to URLField
+    avatar = serializers.URLField(required=False) 
 
     class Meta:
         model = User
