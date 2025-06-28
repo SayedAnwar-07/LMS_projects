@@ -9,14 +9,11 @@ import {
   Check,
   Play,
   Download,
-  Share2,
-  Bookmark,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import Curriculum from "@/components/details/Curriculum";
-import Reviews from "@/components/details/Reviews";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchCourseById,
@@ -28,6 +25,7 @@ import {
   selectIsEnrolled,
 } from "@/redux/features/paymentSlice";
 import { BackButton } from "@/components/BackButton";
+import ReviewList from "@/components/reviews/ReviewList";
 
 const CourseDetailPage = () => {
   const { courseId } = useParams();
@@ -97,6 +95,7 @@ const CourseDetailPage = () => {
     );
   }
 
+  // console.log(selectedCourse);
   return (
     <div className="bg-gray-50 min-h-screen">
       <main className="container mx-auto px-4 py-8">
@@ -120,8 +119,7 @@ const CourseDetailPage = () => {
                 <div className="flex items-center text-gray-600">
                   <Users className="h-5 w-5" />
                   <span className="ml-1">
-                    {selectedCourse.enrollments_count?.toLocaleString() || 0}{" "}
-                    students
+                    {selectedCourse.students || 0} students
                   </span>
                 </div>
                 {selectedCourse.is_featured && (
@@ -235,11 +233,7 @@ const CourseDetailPage = () => {
               </TabsContent>
 
               <TabsContent value="reviews" className="mt-6">
-                <Reviews
-                  rating={selectedCourse.rating}
-                  reviewsCount={selectedCourse.reviews_count}
-                  courseId={selectedCourse.id}
-                />
+                <ReviewList courseId={selectedCourse.id} />
               </TabsContent>
             </Tabs>
           </div>
@@ -321,7 +315,6 @@ const CourseDetailPage = () => {
                 </ul>
               </div>
 
-              {/* Share options */}
               {/* Share options */}
               <div className="p-6 border-t">
                 <h3 className="font-bold mb-3">Share this course</h3>

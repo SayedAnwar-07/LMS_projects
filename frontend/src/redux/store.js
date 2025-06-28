@@ -6,6 +6,7 @@ import curriculumReducer from "./features/curriculumSlice";
 import paymentReducer from "./features/paymentSlice";
 import enrolledReducer from "./features/enrolledSlice";
 import progressReducer from "./features/progressSlice";
+import reviewReducer from "./features/reviewSlice";
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     payment: paymentReducer,
     enrollments: enrolledReducer,
     progress: progressReducer,
+    reviews: reviewReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

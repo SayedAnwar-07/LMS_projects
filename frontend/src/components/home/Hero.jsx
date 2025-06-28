@@ -1,6 +1,9 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import user1 from "../../assets/images/user1.jpg";
+import user2 from "../../assets/images/user2.jpg";
+import user3 from "../../assets/images/user3.jpg";
 
 const Hero = () => {
   return (
@@ -39,12 +42,10 @@ const Hero = () => {
             </div>
             <div className="flex items-center gap-4 pt-4">
               <div className="flex -space-x-2">
-                {[1, 2, 3].map((item) => (
+                {[user1, user2, user3].map((userImg, index) => (
                   <img
-                    key={item}
-                    src={`https://randomuser.me/api/portraits/${
-                      item % 2 === 0 ? "women" : "men"
-                    }/${item}0.jpg`}
+                    key={index}
+                    src={userImg}
                     alt="User"
                     className="w-10 h-10 rounded-full border-2 border-white"
                   />

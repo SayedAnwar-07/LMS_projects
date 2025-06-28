@@ -19,6 +19,18 @@ const initialState = {
 
 const ensureArray = (data) => (Array.isArray(data) ? data : []);
 
+export const fetchCourse = createAsyncThunk(
+  "curriculum/fetchCourse",
+  async (courseId, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/courses/${courseId}/`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
 export const fetchSections = createAsyncThunk(
   "curriculum/fetchSections",
   async (courseId, { rejectWithValue }) => {
@@ -131,6 +143,10 @@ const curriculumSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchCourse.fulfilled, (state, action) => {
+        state.course = action.payload;
+        state.status = "succeeded";
+      })
       // Sections
       .addCase(fetchSections.fulfilled, (state, action) => {
         state.sections = action.payload;
@@ -197,6 +213,8 @@ const curriculumSlice = createSlice({
 });
 
 // Selectors with proper null checks
+export const selectCourse = (state) => state.curriculum.course;
+
 export const selectAllSections = (state) => state.curriculum.sections || [];
 export const selectAllLessons = (state) => state.curriculum.lessons || [];
 export const selectCurriculumStatus = (state) => state.curriculum.status;

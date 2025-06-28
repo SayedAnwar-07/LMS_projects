@@ -329,18 +329,24 @@ export const { clearSelectedCourse, resetCourseState } = courseSlice.actions;
 
 // Selectors
 export const selectAllCourses = (state) => state.courses.courses;
+
 export const selectCourseById = (state, courseId) =>
   state.courses.courses.find((course) => course.id === courseId) ||
   (state.courses.selectedCourse?.id === courseId
     ? state.courses.selectedCourse
     : null);
+
 export const selectCourseLoading = (state) => state.courses.loading;
 export const selectCourseError = (state) => state.courses.error;
+
 export const selectCourseCurriculum = (state, courseId) =>
   state.courses.curriculum[courseId] || [];
+
 export const selectCourseMaterials = (state, courseId) =>
   state.courses.materials[courseId] || [];
+
 export const selectCoursePagination = (state) => state.courses.pagination;
+
 export const selectAllCategories = (state) => state.courses.categories;
 export const selectCategoryById = (state, categoryId) =>
   state.courses.categories.find((category) => category.id === categoryId);

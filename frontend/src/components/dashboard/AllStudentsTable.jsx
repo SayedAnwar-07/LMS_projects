@@ -85,8 +85,8 @@ const AllStudentsTable = ({ courses }) => {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Your Courses</CardTitle>
-          <CardDescription>Overview of your courses</CardDescription>
+          <CardTitle>All Teacher's Courses</CardTitle>
+          <CardDescription>Overview of all courses</CardDescription>
         </CardHeader>
         <CardContent>
           {courses.length > 0 ? (

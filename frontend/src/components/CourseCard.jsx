@@ -75,7 +75,7 @@ const CourseCard = ({ course }) => {
           <div className="flex items-center">
             <Users className="h-4 w-4 text-gray-500" />
             <span className="text-sm text-gray-600 ml-1">
-              {course.students.toLocaleString()}
+              {course.students || 0}
             </span>
           </div>
         </div>

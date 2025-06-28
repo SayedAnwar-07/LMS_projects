@@ -1,6 +1,5 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -84,14 +83,14 @@ const Navbar = () => {
 
         {/* Search and Login/User - Right Side */}
         <div className="flex items-center space-x-4">
-          <div className="relative hidden sm:block">
+          {/* <div className="relative hidden sm:block">
             <Input
               type="text"
               placeholder="Search..."
               className="bg-gray-100 border-gray-300 text-black placeholder-gray-500 rounded-full pl-10 pr-4 py-2 focus:ring-2 focus:ring-gray-500 focus:border-transparent"
             />
             <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-500" />
-          </div>
+          </div> */}
 
           {loading ? (
             <div className="h-8 w-8 rounded-full bg-gray-200 animate-pulse" />
@@ -105,7 +104,7 @@ const Navbar = () => {
                   {user?.avatar ? (
                     <img
                       src={user.avatar}
-                      alt="User Avatar"
+                      alt="{user.full_name}"
                       className="h-8 w-8 rounded-full object-cover"
                     />
                   ) : (
@@ -174,12 +173,12 @@ const Navbar = () => {
               </Link>
             ))}
             <div className="relative py-2">
-              <Input
+              {/* <Input
                 type="text"
                 placeholder="Search..."
                 className="bg-gray-100 border-gray-300 text-black placeholder-gray-500 rounded-full pl-10 pr-4 py-2 focus:ring-2 focus:ring-gray-500 focus:border-transparent"
               />
-              <Search className="absolute left-3 top-3.5 h-5 w-5 text-gray-500" />
+              <Search className="absolute left-3 top-3.5 h-5 w-5 text-gray-500" /> */}
             </div>
             {isAuthenticated ? (
               <>

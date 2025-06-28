@@ -162,7 +162,7 @@ const TeacherDashboard = () => {
   if (loading || !data) {
     return (
       <div className="container mx-auto px-4 py-8 space-y-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {[...Array(3)].map((_, i) => (
             <Card key={`stats-${i}`}>
               <CardHeader>
@@ -174,7 +174,7 @@ const TeacherDashboard = () => {
             </Card>
           ))}
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <Card>
             <CardHeader>
               <Skeleton className="h-6 w-1/2" />
@@ -192,7 +192,7 @@ const TeacherDashboard = () => {
             </CardContent>
           </Card>
         </div>
-        <div className="grid grid-cols-1 gap-6">
+        <div className="grid grid-cols-1 gap-4 sm:gap-6">
           {[...Array(3)].map((_, i) => (
             <Card key={`courses-${i}`}>
               <CardHeader>
@@ -227,32 +227,37 @@ const TeacherDashboard = () => {
       : 0;
 
   return (
-    <div className="container mx-auto px-4 pb-8 space-y-6">
+    <div className="container mx-auto px-2 sm:px-4 pb-4 sm:pb-8 space-y-4 sm:space-y-6">
       <BackButton />
 
       {/* Header Section with Profile */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6">
+        <div className="flex items-center gap-3 sm:gap-4">
           <div className="relative">
             <img
               src={teacher?.avatar || "/default-avatar.png"}
               alt="Profile"
-              className="w-16 h-16 rounded-full object-cover border-2 border-primary"
+              className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-primary"
             />
-            <Badge className="absolute -bottom-2 -right-2 bg-green-500 text-white">
+            <Badge className="absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 bg-green-500 text-white text-xs">
               Teacher
             </Badge>
           </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
               Welcome, {teacher?.full_name || "Teacher"}!
             </h1>
-            <p className="text-muted-foreground">{teacher?.email}</p>
+            <p className="text-muted-foreground text-sm sm:text-base">
+              {teacher?.email}
+            </p>
           </div>
         </div>
-        <div className="flex items-center space-x-4">
-          <Badge variant="outline" className="text-sm flex items-center gap-2">
-            <Bookmark className="h-4 w-4 text-primary" />
+        <div className="flex items-center space-x-2 sm:space-x-4">
+          <Badge
+            variant="outline"
+            className="text-xs sm:text-sm flex items-center gap-1 sm:gap-2"
+          >
+            <Bookmark className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
             {new Date().toLocaleDateString("en-US", {
               weekday: "long",
               month: "short",
@@ -263,17 +268,21 @@ const TeacherDashboard = () => {
       </div>
 
       {/* Stats Overview Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
         {/* Total Courses Card */}
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Courses</CardTitle>
-            <BookOpen className="h-5 w-5 text-blue-500" />
+            <CardTitle className="text-xs sm:text-sm font-medium">
+              Total Courses
+            </CardTitle>
+            <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{total_courses}</div>
-            <div className="flex items-center gap-2 mt-2">
-              <Progress value={100} className="h-2" />
+            <div className="text-2xl sm:text-3xl font-bold">
+              {total_courses}
+            </div>
+            <div className="flex items-center gap-2 mt-1 sm:mt-2">
+              <Progress value={100} className="h-1 sm:h-2" />
               <span className="text-xs text-muted-foreground">All courses</span>
             </div>
           </CardContent>
@@ -285,17 +294,19 @@ const TeacherDashboard = () => {
         {/* Total Students Card */}
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-xs sm:text-sm font-medium">
               Total Students
             </CardTitle>
-            <Users className="h-5 w-5 text-green-500" />
+            <Users className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{total_students}</div>
-            <div className="flex items-center gap-2 mt-2">
+            <div className="text-2xl sm:text-3xl font-bold">
+              {total_students}
+            </div>
+            <div className="flex items-center gap-2 mt-1 sm:mt-2">
               <Progress
                 value={Math.min(100, total_students)}
-                className="h-2"
+                className="h-1 sm:h-2"
                 indicatorColor="bg-green-500"
               />
               <span className="text-xs text-muted-foreground">
@@ -313,17 +324,19 @@ const TeacherDashboard = () => {
         {/* Featured Courses Card */}
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-xs sm:text-sm font-medium">
               Featured Courses
             </CardTitle>
-            <Star className="h-5 w-5 text-yellow-500 fill-yellow-200" />
+            <Star className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500 fill-yellow-200" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{total_featured_courses}</div>
-            <div className="flex items-center gap-2 mt-2">
+            <div className="text-2xl sm:text-3xl font-bold">
+              {total_featured_courses}
+            </div>
+            <div className="flex items-center gap-2 mt-1 sm:mt-2">
               <Progress
                 value={featuredPercentage}
-                className="h-2"
+                className="h-1 sm:h-2"
                 indicatorColor="bg-yellow-500"
               />
               <span className="text-xs text-muted-foreground">
@@ -341,26 +354,26 @@ const TeacherDashboard = () => {
         {/* Engagement Card */}
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-xs sm:text-sm font-medium">
               Engagement Score
             </CardTitle>
-            <Award className="h-5 w-5 text-purple-500" />
+            <Award className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">
+            <div className="text-2xl sm:text-3xl font-bold">
               {total_courses > 0
                 ? Math.round((total_students / (total_courses * 50)) * 100)
                 : 0}
               /100
             </div>
-            <div className="flex items-center gap-2 mt-2">
+            <div className="flex items-center gap-2 mt-1 sm:mt-2">
               <Progress
                 value={
                   total_courses > 0
                     ? Math.round((total_students / (total_courses * 50)) * 100)
                     : 0
                 }
-                className="h-2"
+                className="h-1 sm:h-2"
                 indicatorColor="bg-purple-500"
               />
               <span className="text-xs text-muted-foreground">
@@ -375,43 +388,49 @@ const TeacherDashboard = () => {
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
         {/* Students per Course Bar Chart */}
-        <Card className="h-[350px] border border-gray-200 shadow-sm">
+        <Card className="h-[300px] sm:h-[350px] border border-gray-200 shadow-sm">
           <CardHeader>
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
               <div>
-                <CardTitle>Students per Course</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-sm sm:text-base">
+                  Students per Course
+                </CardTitle>
+                <CardDescription className="text-xs sm:text-sm">
                   Distribution of students across your courses
                 </CardDescription>
               </div>
-              <Badge variant="outline" className="flex items-center gap-1">
+              <Badge
+                variant="outline"
+                className="flex items-center gap-1 w-fit sm:w-auto"
+              >
                 <Users className="h-3 w-3" />
                 {total_students} total
               </Badge>
             </div>
           </CardHeader>
-          <CardContent className="h-[250px]">
+          <CardContent className="h-[200px] sm:h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={chartData}
                 margin={{
                   top: 5,
-                  right: 30,
-                  left: 20,
+                  right: 10,
+                  left: 0,
                   bottom: 5,
                 }}
               >
                 <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                <XAxis dataKey="name" />
-                <YAxis />
+                <XAxis dataKey="name" fontSize={12} />
+                <YAxis fontSize={12} />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: "white",
                     borderRadius: "8px",
                     boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
                     border: "1px solid #e2e8f0",
+                    fontSize: "12px",
                   }}
                 />
                 <Legend />
@@ -427,22 +446,27 @@ const TeacherDashboard = () => {
         </Card>
 
         {/* Featured vs Regular Pie Chart */}
-        <Card className="h-[350px] border border-gray-200 shadow-sm">
+        <Card className="h-[300px] sm:h-[350px] border border-gray-200 shadow-sm">
           <CardHeader>
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
               <div>
-                <CardTitle>Course Types</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-sm sm:text-base">
+                  Course Types
+                </CardTitle>
+                <CardDescription className="text-xs sm:text-sm">
                   Featured vs regular courses breakdown
                 </CardDescription>
               </div>
-              <Badge variant="outline" className="flex items-center gap-1">
+              <Badge
+                variant="outline"
+                className="flex items-center gap-1 w-fit sm:w-auto"
+              >
                 <Star className="h-3 w-3" />
                 {total_featured_courses} featured
               </Badge>
             </div>
           </CardHeader>
-          <CardContent className="h-[250px]">
+          <CardContent className="h-[200px] sm:h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -450,7 +474,7 @@ const TeacherDashboard = () => {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  outerRadius={80}
+                  outerRadius={70}
                   fill="#8884d8"
                   dataKey="value"
                   label={({ name, percent }) =>
@@ -471,6 +495,7 @@ const TeacherDashboard = () => {
                     borderRadius: "8px",
                     boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
                     border: "1px solid #e2e8f0",
+                    fontSize: "12px",
                   }}
                 />
                 <Legend />
@@ -481,34 +506,34 @@ const TeacherDashboard = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
         <Button
           variant="outline"
-          className="flex flex-col items-center justify-center h-24 gap-2"
+          className="flex flex-col items-center justify-center h-20 sm:h-24 gap-1 sm:gap-2 p-2"
         >
-          <BookOpen className="h-6 w-6" />
-          <span>Create Course</span>
+          <BookOpen className="h-4 w-4 sm:h-6 sm:w-6" />
+          <span className="text-xs sm:text-sm">Create Course</span>
         </Button>
         <Button
           variant="outline"
-          className="flex flex-col items-center justify-center h-24 gap-2"
+          className="flex flex-col items-center justify-center h-20 sm:h-24 gap-1 sm:gap-2 p-2"
         >
-          <Users className="h-6 w-6" />
-          <span>Manage Students</span>
+          <Users className="h-4 w-4 sm:h-6 sm:w-6" />
+          <span className="text-xs sm:text-sm">Manage Students</span>
         </Button>
         <Button
           variant="outline"
-          className="flex flex-col items-center justify-center h-24 gap-2"
+          className="flex flex-col items-center justify-center h-20 sm:h-24 gap-1 sm:gap-2 p-2"
         >
-          <Star className="h-6 w-6" />
-          <span>Feature Course</span>
+          <Star className="h-4 w-4 sm:h-6 sm:w-6" />
+          <span className="text-xs sm:text-sm">Feature Course</span>
         </Button>
         <Button
           variant="outline"
-          className="flex flex-col items-center justify-center h-24 gap-2"
+          className="flex flex-col items-center justify-center h-20 sm:h-24 gap-1 sm:gap-2 p-2"
         >
-          <Award className="h-6 w-6" />
-          <span>View Analytics</span>
+          <Award className="h-4 w-4 sm:h-6 sm:w-6" />
+          <span className="text-xs sm:text-sm">View Analytics</span>
         </Button>
       </div>
 

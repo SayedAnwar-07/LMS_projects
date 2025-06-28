@@ -8,18 +8,9 @@ const Footer = () => {
       title: "Company",
       links: [
         { name: "About Us", href: "/about" },
-        { name: "Careers", href: "/careers" },
-        { name: "Blog", href: "/blog" },
-        { name: "Press", href: "/press" },
-      ],
-    },
-    {
-      title: "Resources",
-      links: [
+        { name: "Contact", href: "/contact" },
         { name: "Courses", href: "/courses" },
-        { name: "Tutorials", href: "/tutorials" },
-        { name: "Webinars", href: "/webinars" },
-        { name: "Help Center", href: "/support" },
+        { name: "Home", href: "/" },
       ],
     },
   ];
@@ -34,7 +25,7 @@ const Footer = () => {
   return (
     <footer className="bg-black border-t border-gray-200">
       <div className="container mx-auto px-4 py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Brand Info */}
           <div className="space-y-4">
             <Link to="/" className="text-2xl font-bold text-white">
