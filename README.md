@@ -1,4 +1,4 @@
-# <img src="https://i.ibb.co/Q3bZQ4Cb/The-Medhakosh.png" alt="The Medhakosh Logo" width="150"/>
+# <img src="https://i.ibb.co/Q3bZQ4Cb/The-Medhakosh.png" alt="The Medhakosh Logo" width="1080"/>
 
 # The Medhakosh - Online Learning Platform
 
