@@ -1,3 +1,5 @@
+# <img src="https://i.ibb.co/Q3bZQ4Cb/The-Medhakosh.png" alt="The Medhakosh Logo" width="150"/>
+
 # The Medhakosh - Online Learning Platform
 
 ## 🌐 Live Demonstration
